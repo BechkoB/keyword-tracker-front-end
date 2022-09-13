@@ -1,0 +1,25 @@
+.title {
+  @apply w-36 mt-4;
+}
+
+.container {
+  @apply flex flex-row  justify-center
+}
+
+.typ {
+  @apply flex flex-row justify-center
+}
+
+.input {
+  width: 5rem;
+}
+
+.select {
+  width: 13rem;
+}
+
+.dash {
+  margin: 0.5rem 1rem;
+  font-size: 20px;
+  font-weight: bold;
+}

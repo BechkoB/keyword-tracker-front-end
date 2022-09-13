@@ -1,0 +1,5 @@
+<app-loading-spinner *ngIf="loading$"></app-loading-spinner>
+<ng-container *ngIf="(loginStatus$ | async) === true as loginStatus">
+  <app-nav *ngIf="loginStatus"></app-nav>
+</ng-container>
+<router-outlet></router-outlet>

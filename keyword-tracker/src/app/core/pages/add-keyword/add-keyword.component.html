@@ -1,0 +1,31 @@
+<h1 class="text-center text-3xl font-bold my-6">Neues Keyword hinzufügen</h1>
+
+<form
+  [formGroup]="keywordForm"
+  class="flex flex-col justify-center align-middle content-center"
+>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>Keyword</mat-label>
+    <input matInput formControlName="keyword" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>URL</mat-label>
+    <input matInput formControlName="url" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>Suchvolumen</mat-label>
+    <input matInput formControlName="suchvolumen" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>Typ</mat-label>
+    <input matInput formControlName="typ" />
+  </mat-form-field>
+
+  <button
+    [disabled]="keywordForm.invalid"
+    class="justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-2 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
+    (click)="addKeyword(keywordForm)"
+  >
+    Keyword hinzufügen
+  </button>
+</form>

@@ -1,0 +1,66 @@
+<ng-container class="flex content-center">
+  <h1 class="text-center text-3xl font-bold my-6">Keywörter filtern</h1>
+
+  <form
+    [formGroup]="filterForm"
+    class="flex flex-col justify-center align-middle content-center"
+  >
+    <div class="container" [formGroup]="suchvolumen">
+      <p class="title">Suchvolumen</p>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>from</mat-label>
+        <input matInput formControlName="from" />
+      </mat-form-field>
+      <p class="dash">-</p>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>to</mat-label>
+        <input matInput formControlName="to"/>
+      </mat-form-field>
+    </div>
+    <div class="container" [formGroup]="position">
+      <p class="title">Position</p>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>from</mat-label>
+        <input matInput formControlName="from" />
+      </mat-form-field>
+      <p class="dash">-</p>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>to</mat-label>
+        <input matInput formControlName="to" />
+      </mat-form-field>
+    </div>
+    <div class="container" [formGroup]="impressions">
+      <p class="title">Impressions</p>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>from</mat-label>
+        <input matInput formControlName="from" />
+      </mat-form-field>
+      <p class="dash">-</p>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>to</mat-label>
+        <input matInput formControlName="to" />
+      </mat-form-field>
+    </div>
+  </form>
+  <div class="typ">
+    <p class="title">Keyword Typ</p>
+    <mat-form-field appearance="outline">
+      <mat-label>Typ</mat-label>
+      <mat-select [(ngModel)]="typ" (valueChange)="changeTyp(typ)">
+        <mat-option *ngFor="let option of options" [value]="option">
+          {{ option }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <p *ngIf="hasError" class="text-center relative bottom-4 text-red-400">
+    {{errMsg}}
+  </p>
+  <button
+  [disabled]="!filterForm.touched || !filterForm.dirty"
+  class="flex justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-2 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
+  (click)="onSearch(filterForm)"
+>
+  Keyword hinzufügen
+</button>
+</ng-container>

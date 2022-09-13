@@ -1,0 +1,47 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700|Nunito:400,700');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 1rem 5rem;
+  font-family: 'Lato', sans-serif;;
+  background-color: #ecf0f3;
+}
+
+.navbar {
+  @apply relative w-full flex;
+  display: inline-flex !important;
+  letter-spacing: 1px;
+}
+
+.mat-header-cell {
+  font-size: 20px ;
+  font-weight: bold;
+  color: black;
+}
+
+
+.mat-dialog-container {
+  border-radius: 10px !important;
+}
+
+.mat-form-field-flex {
+  height: 50px;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-label {
+  margin-top: -0.5em;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.5em 0 0.5em 0;
+}

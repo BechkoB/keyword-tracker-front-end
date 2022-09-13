@@ -1,0 +1,45 @@
+<mat-nav-list class="navbar">
+  <a
+    mat-list-item
+    [routerLink]="'/keywords'"
+    matTooltip="Keywords"
+    routerLinkActive="active"
+    [disableRipple]="true"
+    class="nav"
+  >
+    Keywords
+  </a>
+  <a
+    mat-list-item
+    [routerLink]="'/urls'"
+    matTooltip="URl's"
+    routerLinkActive="active"
+    [disableRipple]="true"
+    class="nav"
+  >
+    URLs
+  </a>
+  <a
+    mat-list-item
+    [routerLink]="'/new-keyword'"
+    matTooltip="New Keywords"
+    routerLinkActive="active"
+    [disableRipple]="true"
+    class="nav"
+  >
+    Neue Keywords
+  </a>
+  <a
+    mat-list-item
+    [routerLink]="'/tags'"
+    matTooltip="Tags"
+    routerLinkActive="active"
+    [disableRipple]="true"
+    class="nav"
+  >
+    Tags
+  </a>
+  <button class="nav absolute right-6" mat-list-item (click)="onLogout()" matTooltip="Logout">
+    logout
+  </button>
+</mat-nav-list>
