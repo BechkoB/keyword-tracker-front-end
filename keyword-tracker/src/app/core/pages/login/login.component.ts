@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
         result.pipe(take(1)).subscribe(response => {
           if (response.success) {
             this.userService.setUserData(response.user);
-            this.router.navigateByUrl('/keywords');
+            this.router.navigateByUrl('/');
             this.store.dispatch(hideLoading());
           } else {
             this.hasError = true;
@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: () => {
           this.store.dispatch(hideLoading());
-          this.router.navigate(['/keywords']);
+          this.router.navigate(['/']);
         },
         error: () => {
           this.store.dispatch(hideLoading());

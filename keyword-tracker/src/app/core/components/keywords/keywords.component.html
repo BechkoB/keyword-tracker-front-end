@@ -4,25 +4,55 @@
     <div>
       <input
         matInput
-        (keyup)="applyFilter($event)"
+        (keyup.enter)="applyFilter($event)"
         #input
         placeholder="Keyword suchen"
       />
     </div>
     <div class="mt-6">
-      <button class="my-4 mx-4" matTooltip="Filters" (click)="filterKeywords()">Filter</button>
-      <button class="w-60 mr-6 mt-4" matTooltip="Add keyword" (click)="addKeyword()">
+      <button
+        *ngIf="hasFilters"
+        class="clear"
+        matTooltip="Clear Filters"
+        (click)="resetFilters()"
+      >
+      Clear Filters
+      <mat-icon
+        class="relative top-0.5 w-1 h-1"
+        aria-hidden="false"
+        aria-label="Example home icon"
+        fontIcon="close"
+      ></mat-icon>
+    </button>
+
+      <button
+        class="btn my-4 mx-4"
+        matTooltip="Filters"
+        (click)="filterKeywords()"
+      >
+        Filter
+      </button>
+      <button
+        class="btn w-60 mr-6 mt-4"
+        matTooltip="Add keyword"
+        (click)="addKeyword()"
+      >
         Keyword hinzufügen
       </button>
     </div>
   </div>
-  <div class="example-loading-shade"
-       *ngIf="isLoadingResults">
+  <div class="example-loading-shade" *ngIf="isLoadingResults">
     <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
   </div>
-  <table mat-table #table [dataSource]="dataSource" matSort matSortActive="created">
+  <table
+    mat-table
+    #table
+    [dataSource]="dataSource"
+    matSort
+    matSortActive="created"
+  >
     <ng-container matColumnDef="key">
-      <th mat-header-cell *matHeaderCellDef >Keyword</th>
+      <th mat-header-cell *matHeaderCellDef>Keyword</th>
       <td mat-cell *matCellDef="let row">{{ row.keyword }}</td>
     </ng-container>
 
@@ -32,7 +62,7 @@
     </ng-container>
 
     <ng-container matColumnDef="url">
-      <th mat-header-cell *matHeaderCellDef >URL</th>
+      <th mat-header-cell *matHeaderCellDef>URL</th>
       <td mat-cell *matCellDef="let row">{{ row.url }}</td>
     </ng-container>
 
@@ -48,7 +78,7 @@
 
     <ng-container matColumnDef="position">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
-      <td mat-cell *matCellDef="let row">{{ (row.position).toFixed(2) }}</td>
+      <td mat-cell *matCellDef="let row">{{ row.position.toFixed(2) }}</td>
     </ng-container>
 
     <ng-container matColumnDef="impressions">
@@ -58,7 +88,7 @@
 
     <ng-container matColumnDef="ctr">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
-      <td mat-cell *matCellDef="let row">{{ (row.ctr).toFixed(2) }}</td>
+      <td mat-cell *matCellDef="let row">{{ row.ctr.toFixed(2) }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

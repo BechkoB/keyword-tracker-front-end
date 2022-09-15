@@ -41,26 +41,26 @@
         <input matInput formControlName="to" />
       </mat-form-field>
     </div>
+    <div class="typ">
+      <p class="title">Keyword Typ</p>
+      <mat-form-field appearance="outline">
+        <mat-label>Typ</mat-label>
+        <mat-select (valueChange)="changeTyp(typ)" formControlName="keywordTyp">
+          <mat-option *ngFor="let option of options" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <p *ngIf="hasError" class="text-center relative bottom-4 text-red-400">
+      {{errMsg}}
+    </p>
+    <button
+    [disabled]="!filterForm.touched || !filterForm.dirty"
+    class="flex justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-2 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
+    (click)="onSearch(filterForm)"
+  >
+    Keyword hinzufügen
+  </button>
   </form>
-  <div class="typ">
-    <p class="title">Keyword Typ</p>
-    <mat-form-field appearance="outline">
-      <mat-label>Typ</mat-label>
-      <mat-select [(ngModel)]="typ" (valueChange)="changeTyp(typ)">
-        <mat-option *ngFor="let option of options" [value]="option">
-          {{ option }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <p *ngIf="hasError" class="text-center relative bottom-4 text-red-400">
-    {{errMsg}}
-  </p>
-  <button
-  [disabled]="!filterForm.touched || !filterForm.dirty"
-  class="flex justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-2 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
-  (click)="onSearch(filterForm)"
->
-  Keyword hinzufügen
-</button>
 </ng-container>

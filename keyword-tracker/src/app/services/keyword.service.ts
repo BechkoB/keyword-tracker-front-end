@@ -1,6 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, take } from 'rxjs';
+import { IFilters } from '../interfaces/IFilters.interface';
 import { IKeyword } from '../interfaces/IKeyword.interfaces';
 import { HttpService } from './http.service';
 
@@ -9,17 +10,24 @@ import { HttpService } from './http.service';
 })
 export class KeywordService {
 
+  filters: IFilters = {
+    suchvolumen: { from: null, to: null },
+    position: { from: null, to: null },
+    impressions: { from: null, to: null },
+    keywordTyp: '',
+    keyword: ''
+  }
+
   public keywordSubject = new BehaviorSubject<IKeyword[]>([]);
   public hasFilterSubject = new BehaviorSubject<boolean>(false);
-  public filtersSubject = new BehaviorSubject<any>(undefined);
-
+  public filtersSubject = new BehaviorSubject<IFilters>(this.filters);
 
   constructor(
     private httpService: HttpService
   ) { }
 
   fetchAll(params: HttpParams, hasFilter: boolean, filters: any) {
-    this.httpService.post('keywords/all/?' + params, {hasFilter: hasFilter, filters: filters}).subscribe(data => {
+    this.httpService.post('keywords/all/?' + params, { hasFilter: hasFilter, filters: filters }).subscribe(data => {
       console.log(data, 'data in fetchAll');
       this.keywordSubject.next(data);
     })
@@ -33,7 +41,7 @@ export class KeywordService {
     return this.httpService.post('keywords/filter', body)
   }
 
-  public set setFilters(value: any) {
+  public set setFilters(value: IFilters) {
     this.filtersSubject.next(value);
   }
 

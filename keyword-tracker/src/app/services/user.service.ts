@@ -64,7 +64,7 @@ export class UserService {
     this._loginStatus.next(state);
   }
 
-  public get hasUserLoggedIn(): Observable<boolean> {
+  get hasUserLoggedIn(): Observable<boolean> {
     return this._loginStatus.asObservable();
   }
 

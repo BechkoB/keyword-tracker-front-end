@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
       this.userService.userLoggedIn = true;
       this.loginStatus$ = this.userService.hasUserLoggedIn;
     }
+    this.loginStatus$ = this.userService.hasUserLoggedIn;
     this.store.dispatch(hideLoading());
   }
 

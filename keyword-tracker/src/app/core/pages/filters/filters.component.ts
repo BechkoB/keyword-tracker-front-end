@@ -2,8 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSelect } from '@angular/material/select';
-import { take } from 'rxjs';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { KeywordService } from 'src/app/services/keyword.service';
 
 @Component({
@@ -18,27 +17,28 @@ export class FiltersComponent implements OnInit {
   hasFilters: boolean = false;
   typ = '';
   options = ['M', 'T'];
+
   suchvolumen = new FormGroup({
-    from: new FormControl(null),
-    to: new FormControl(null)
+    from: new FormControl<number | null>(null),
+    to: new FormControl<number | null>(null)
   });
 
   position = new FormGroup({
-    from: new FormControl(null),
-    to: new FormControl(null)
+    from: new FormControl<number | null>(null),
+    to: new FormControl<number | null>(null)
   });
 
   impressions = new FormGroup({
-    from: new FormControl(null),
-    to: new FormControl(null)
+    from: new FormControl<number | null>(null),
+    to: new FormControl<number | null>(null)
   });
 
-  // keywordTyp = new FormControl('');
 
   filterForm = new FormGroup({
     suchvolumen: this.suchvolumen,
     position: this.position,
-    impressions: this.impressions
+    impressions: this.impressions,
+    keywordTyp: new FormControl('')
   });
 
   constructor(
@@ -49,6 +49,8 @@ export class FiltersComponent implements OnInit {
   ngOnInit(): void {
     this.keywordService.hasFilters
       .subscribe(value => this.hasFilters = value);
+    this.keywordService.getFilters
+      .subscribe((value: IFilters) => this.initFiltersForm(value));
   }
 
   onSearch(form: FormGroup) {
@@ -63,6 +65,21 @@ export class FiltersComponent implements OnInit {
     this.getFiltered(formObj);
   }
 
+  initFiltersForm(filters: IFilters) {
+    this.suchvolumen.patchValue({
+      from: filters.suchvolumen.from || null,
+      to: filters.suchvolumen.to
+    });
+    this.position.patchValue({
+      from: filters.position.from || null,
+      to: filters.position.to
+    });
+    this.impressions.patchValue({
+      from: filters.impressions.from || null,
+      to: filters.impressions.to
+    });
+    this.filterForm.controls['keywordTyp'].setValue(filters.keywordTyp)
+  }
 
   trimValues(obj: any) {
     for (const key in obj) {
@@ -81,7 +98,6 @@ export class FiltersComponent implements OnInit {
         }
       }
     }
-    console.log(obj, 'returned obj')
     return obj
   }
 

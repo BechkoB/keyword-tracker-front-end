@@ -17,7 +17,7 @@ input {
   letter-spacing: 1px;
 }
 
-button {
+.btn {
   min-width: 8rem;
   height: 35px;
   font-size: 20px;
@@ -25,6 +25,13 @@ button {
   border-radius: 10px;
   letter-spacing: 1px;
   color: rgba(252, 64, 64, 0.774);
+}
+
+.clear {
+  color: rgba(252, 64, 64, 0.774);
+  letter-spacing: 1px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .example-loading-shade {

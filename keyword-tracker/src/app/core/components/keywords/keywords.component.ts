@@ -9,6 +9,7 @@ import { HttpParams } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { AddKeywordComponent } from '../../pages/add-keyword/add-keyword.component';
 import { FiltersComponent } from '../../pages/filters/filters.component';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class KeywordsComponent implements OnInit {
   pageSize = 10;
   isLoadingResults = true;
   pageSizeOptions: [5, 10, 20, 50];
-  filters: any;
+  filters: IFilters;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -33,7 +34,6 @@ export class KeywordsComponent implements OnInit {
   constructor(
     private keywordsService: KeywordService,
     private dialog: MatDialog,
-
   ) { }
 
   ngOnInit(): void {
@@ -42,7 +42,7 @@ export class KeywordsComponent implements OnInit {
     this.keywordsService.hasFilters.pipe(takeUntil(this._destroy$))
       .subscribe(value => this.hasFilters = value);
     this.keywordsService.getFilters.pipe(takeUntil(this._destroy$))
-      .subscribe((value: any) => this.filters = value);
+      .subscribe((value: IFilters) => this.filters = value);
   }
 
   async getData(skip: number, take: number) {
@@ -69,8 +69,13 @@ export class KeywordsComponent implements OnInit {
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.filters.keyword = filterValue;
+    const params = new HttpParams()
+    this.hasFilters = true;
+    this.keywordsService.fetchAll(params, true, this.filters);
 
     if (this.dataSource.paginator) {
+      this.paginator.pageIndex = 0
       this.dataSource.paginator.firstPage();
     }
   }
@@ -102,6 +107,18 @@ export class KeywordsComponent implements OnInit {
       width: '600px',
       height: '500px'
     });
+  }
+
+  resetFilters() {
+    this.hasFilters = false;
+    this.keywordsService.setFilters = ({
+      suchvolumen: { from: null, to: null },
+      position: { from: null, to: null },
+      impressions: { from: null, to: null },
+      keywordTyp: '',
+      keyword: ''
+    });
+    this.getData(0, 0);
   }
 
   ngOnDestroy(): void {
