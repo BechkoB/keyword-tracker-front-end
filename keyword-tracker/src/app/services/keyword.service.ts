@@ -1,8 +1,10 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { IFilters } from '../interfaces/IFilters.interface';
 import { IKeyword } from '../interfaces/IKeyword.interfaces';
+import { hideLoading } from '../store/actions';
 import { HttpService } from './http.service';
 
 @Injectable({
@@ -23,13 +25,16 @@ export class KeywordService {
   public filtersSubject = new BehaviorSubject<IFilters>(this.filters);
 
   constructor(
-    private httpService: HttpService
+    private httpService: HttpService,
+    private store: Store<{ showLoading: boolean }>,
+
   ) { }
 
   fetchAll(params: HttpParams, hasFilter: boolean, filters: any) {
     this.httpService.post('keywords/all/?' + params, { hasFilter: hasFilter, filters: filters }).subscribe(data => {
-      console.log(data, 'data in fetchAll');
       this.keywordSubject.next(data);
+      this.store.dispatch(hideLoading());
+
     })
   }
 

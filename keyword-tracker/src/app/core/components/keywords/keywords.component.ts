@@ -10,6 +10,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddKeywordComponent } from '../../pages/add-keyword/add-keyword.component';
 import { FiltersComponent } from '../../pages/filters/filters.component';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
+import { Store } from '@ngrx/store';
+import { hideLoading, showLoading } from 'src/app/store/actions';
 
 
 @Component({
@@ -17,16 +19,17 @@ import { IFilters } from 'src/app/interfaces/IFilters.interface';
   templateUrl: './keywords.component.html',
   styleUrls: ['./keywords.component.scss']
 })
-export class KeywordsComponent implements OnInit {
+export class KeywordsComponent implements OnInit, AfterViewInit {
   private _destroy$: Subject<any>;
   hasFilters: boolean = false;
   displayedColumns: string[] = ['key', 'suchvolumen', 'url', 'type', 'position', 'impressions', 'clicks', 'ctr'];
   length = 0;
   dataSource: MatTableDataSource<any>;
   pageSize = 10;
-  isLoadingResults = true;
+  isLoadingResults: boolean = true;
   pageSizeOptions: [5, 10, 20, 50];
   filters: IFilters;
+  params = new HttpParams().set('order', '').set('direction', '');
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -34,6 +37,8 @@ export class KeywordsComponent implements OnInit {
   constructor(
     private keywordsService: KeywordService,
     private dialog: MatDialog,
+    private store: Store<{ showLoading: boolean }>,
+
   ) { }
 
   ngOnInit(): void {
@@ -45,14 +50,29 @@ export class KeywordsComponent implements OnInit {
       .subscribe((value: IFilters) => this.filters = value);
   }
 
+  ngAfterViewInit(): void {
+    this.sort.sortChange.subscribe(() => {
+      this.store.dispatch(showLoading());
+      this.params = this.params.set('order', this.sort.active);
+      this.params = this.params.set('direction', this.sort.direction);
+      console.log(this.params);
+      this.keywordsService.fetchAll(this.params, this.hasFilters, undefined);
+    });
+
+  }
+
   async getData(skip: number, take: number) {
+    this.store.dispatch(showLoading());
     let params = new HttpParams();
     params = params.set('skip', skip);
     take !== 0 ? params = params.set('take', take) : null;
-    this.keywordsService.fetchAll(params, this.hasFilters, undefined)
+    this.keywordsService.fetchAll(params, this.hasFilters, undefined);
+    this.setTable();
+  }
+
+  setTable() {
     this.keywordsService.keywords.pipe(takeUntil(this._destroy$)).subscribe((data: any) => {
       console.log(data, 'data');
-      this.isLoadingResults = false;
       if (data.data) {
         data.data = this.removeUrl(data.data);
         this.length = data.length;
@@ -67,32 +87,34 @@ export class KeywordsComponent implements OnInit {
   }
 
   applyFilter(event: Event): void {
+    this.store.dispatch(showLoading());
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
     this.filters.keyword = filterValue;
-    const params = new HttpParams()
     this.hasFilters = true;
-    this.keywordsService.fetchAll(params, true, this.filters);
+    this.keywordsService.fetchAll(this.params, true, this.filters);
 
     if (this.dataSource.paginator) {
       this.paginator.pageIndex = 0
       this.dataSource.paginator.firstPage();
     }
+
   }
 
   removeUrl(array: IKeyword[]): IKeyword[] {
     array.map((item: IKeyword) => {
       item.url = item.url.replace('https://www.hochzeitsportal24.de', '');
     })
+    this.store.dispatch(hideLoading());
     return array
   }
 
   onPageChange(event: PageEvent): void {
-    this.isLoadingResults = true;
+    this.store.dispatch(showLoading());
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
     const take = event.pageSize;
-    const params = new HttpParams().set('skip', skip).set('take', take);
-    this.keywordsService.fetchAll(params, this.hasFilters, this.filters)
+    this.params = this.params.set('skip', skip).set('take', take);
+    this.keywordsService.fetchAll(this.params, this.hasFilters, this.filters)
   }
 
   addKeyword(): void {
@@ -103,7 +125,7 @@ export class KeywordsComponent implements OnInit {
   }
 
   filterKeywords() {
-    this.dialog.open(FiltersComponent , {
+    this.dialog.open(FiltersComponent, {
       width: '600px',
       height: '500px'
     });

@@ -2,8 +2,10 @@ import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Store } from '@ngrx/store';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { KeywordService } from 'src/app/services/keyword.service';
+import { showLoading } from 'src/app/store/actions';
 
 @Component({
   selector: 'app-filters',
@@ -43,7 +45,8 @@ export class FiltersComponent implements OnInit {
 
   constructor(
     private keywordService: KeywordService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private store: Store<{ showLoading: boolean }>
   ) { }
 
   ngOnInit(): void {
@@ -55,7 +58,6 @@ export class FiltersComponent implements OnInit {
 
   onSearch(form: FormGroup) {
     this.keywordService.hasFilterSubject.next(true);
-    let hasInput = false;
     let formObj = form.value;
     formObj = this.trimValues(formObj);
     if (formObj === undefined) {
@@ -102,6 +104,8 @@ export class FiltersComponent implements OnInit {
   }
 
   getFiltered(form: any) {
+    this.store.dispatch(showLoading());
+
     this.keywordService.setFilters = form;
     const params = new HttpParams();
     this.keywordService.fetchAll(params, this.hasFilters, form)
