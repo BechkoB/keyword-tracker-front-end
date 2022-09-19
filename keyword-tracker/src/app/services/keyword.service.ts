@@ -26,15 +26,13 @@ export class KeywordService {
 
   constructor(
     private httpService: HttpService,
-    private store: Store<{ showLoading: boolean }>,
-
+    private store: Store<{ showLoading: boolean }>
   ) { }
 
   fetchAll(params: HttpParams, hasFilter: boolean, filters: any) {
     this.httpService.post('keywords/all/?' + params, { hasFilter: hasFilter, filters: filters }).subscribe(data => {
       this.keywordSubject.next(data);
       this.store.dispatch(hideLoading());
-
     })
   }
 
@@ -43,7 +41,7 @@ export class KeywordService {
   }
 
   filter(body: object): Observable<any> {
-    return this.httpService.post('keywords/filter', body)
+    return this.httpService.post('keywords/filter', body);
   }
 
   public set setFilters(value: IFilters) {
@@ -59,7 +57,7 @@ export class KeywordService {
   }
 
   get hasFilters(): Observable<boolean> {
-    return this.hasFilterSubject.asObservable()
+    return this.hasFilterSubject.asObservable();
   }
 
 }

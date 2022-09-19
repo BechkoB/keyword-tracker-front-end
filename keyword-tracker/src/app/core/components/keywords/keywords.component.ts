@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { first, of, Subject, take, takeUntil, takeWhile } from 'rxjs';
+import { Subject,takeUntil } from 'rxjs';
 import { IKeyword } from 'src/app/interfaces/IKeyword.interfaces';
 import { KeywordService } from 'src/app/services/keyword.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -11,7 +11,8 @@ import { AddKeywordComponent } from '../../pages/add-keyword/add-keyword.compone
 import { FiltersComponent } from '../../pages/filters/filters.component';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { Store } from '@ngrx/store';
-import { hideLoading, showLoading } from 'src/app/store/actions';
+import { showLoading } from 'src/app/store/actions';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -56,7 +57,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit {
       this.params = this.params.set('order', this.sort.active);
       this.params = this.params.set('direction', this.sort.direction);
       console.log(this.params);
-      this.keywordsService.fetchAll(this.params, this.hasFilters, undefined);
+      this.keywordsService.fetchAll(this.params, this.hasFilters, this.filters);
     });
 
   }
@@ -103,9 +104,8 @@ export class KeywordsComponent implements OnInit, AfterViewInit {
 
   removeUrl(array: IKeyword[]): IKeyword[] {
     array.map((item: IKeyword) => {
-      item.url = item.url.replace('https://www.hochzeitsportal24.de', '');
+      item.url = item.url.replace(environment.mainUrl, '');
     })
-    this.store.dispatch(hideLoading());
     return array
   }
 
@@ -114,7 +114,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit {
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
     const take = event.pageSize;
     this.params = this.params.set('skip', skip).set('take', take);
-    this.keywordsService.fetchAll(this.params, this.hasFilters, this.filters)
+    this.keywordsService.fetchAll(this.params, this.hasFilters, this.filters);
   }
 
   addKeyword(): void {
