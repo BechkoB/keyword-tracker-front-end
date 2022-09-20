@@ -32,7 +32,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     'key',
     'suchvolumen',
     'url',
-    'type',
+    'typ',
     'position',
     'impressions',
     'clicks',
@@ -147,7 +147,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  resetFilters() {
+  resetFilters(input: HTMLInputElement) {
     this.hasFilters = false;
     this.keywordsService.setFilters = {
       suchvolumen: { from: null, to: null },
@@ -156,6 +156,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
       keywordTyp: '',
       keyword: ''
     };
+    input.value = '';
     this.getData(0, 0);
   }
 

@@ -63,7 +63,6 @@ export class FiltersComponent implements OnInit {
     if (formObj === undefined) {
       return;
     }
-    formObj.keywordTyp = this.typ;
     this.getFiltered(formObj);
   }
 
@@ -84,23 +83,27 @@ export class FiltersComponent implements OnInit {
   }
 
   trimValues(obj: any) {
-    // eslint-disable-next-line guard-for-in
     for (const key in obj) {
-      for (const val in obj[key]) {
-        if (obj[key][val] !== null && obj[key][val] !== '') {
-          if (isNaN(parseInt(obj[key][val], 10))) {
-            this.hasError = true;
-            setTimeout(() => {
-              this.hasError = false;
-            }, 3000);
-            return;
+      if (key !== 'keywordTyp') {
+        // eslint-disable-next-line guard-for-in
+        for (const val in obj[key]) {
+          console.log('obj[key][val]: ' + obj[key][val]);
+          if (obj[key][val] !== null && obj[key][val] !== '') {
+            if (isNaN(parseInt(obj[key][val], 10))) {
+              this.hasError = true;
+              setTimeout(() => {
+                this.hasError = false;
+              }, 3000);
+              return;
+            }
+            obj[key][val] = Number(obj[key][val]);
+          } else if (obj[key][val] === '') {
+            obj[key][val] = null;
           }
-          obj[key][val] = Number(obj[key][val]);
-        } else if (obj[key][val] === '') {
-          obj[key][val] = null;
         }
       }
     }
+    console.log('obj: ' + JSON.stringify(obj));
     return obj;
   }
 

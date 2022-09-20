@@ -31,7 +31,7 @@ export class AddKeywordComponent implements OnInit {
       .pipe(take(1))
       .subscribe((res) => {
         console.log('Keyword added successfully');
-        const params = new HttpParams().set('skip', 0).set('take', 0);
+        const params = new HttpParams().set('skip', 0).set('take', 10);
         this.keywordService.fetchAll(params, false, undefined);
         this.dialog.closeAll();
       });
