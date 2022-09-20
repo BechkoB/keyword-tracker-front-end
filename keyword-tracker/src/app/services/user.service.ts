@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, first, map, Observable } from 'rxjs';
 import { HttpService } from './http.service';
 import { IUser } from '../interfaces/IUser.interface';
-import { SocialAuthService } from '@abacritt/angularx-social-login'
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { Store } from '@ngrx/store';
 import { hideLoading } from '../store/actions';
 
@@ -10,12 +10,11 @@ import { hideLoading } from '../store/actions';
   providedIn: 'root'
 })
 export class UserService {
-
   constructor(
     private readonly httpService: HttpService,
     private authService: SocialAuthService,
     private store: Store
-  ) { }
+  ) {}
 
   private _loginStatus = new BehaviorSubject<boolean>(false);
 
@@ -43,22 +42,21 @@ export class UserService {
 
   async isUserRegistered(email: string): Promise<Observable<any>> {
     const result = this.httpService.get(`users/email/${email}`);
-    return result
+    return result;
   }
 
   onLogout(): void {
     localStorage.clear();
     this._loginStatus.next(false);
-    this.authService.authState.subscribe(user => {
+    this.authService.authState.subscribe((user) => {
       if (user) {
         this.authService.signOut().then(() => {
           this.store.dispatch(hideLoading());
           console.log('User logged out');
         });
       }
-    })
+    });
   }
-
 
   public set userLoggedIn(state: boolean) {
     this._loginStatus.next(state);
@@ -67,5 +65,4 @@ export class UserService {
   get hasUserLoggedIn(): Observable<boolean> {
     return this._loginStatus.asObservable();
   }
-
 }

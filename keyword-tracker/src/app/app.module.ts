@@ -2,7 +2,10 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
-import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import {
+  SocialLoginModule,
+  SocialAuthServiceConfig
+} from '@abacritt/angularx-social-login';
 import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -17,7 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -39,7 +42,6 @@ import { StoreModule } from '@ngrx/store';
 import { appReducer } from './store/reducers';
 import { AddKeywordComponent } from './core/pages/add-keyword/add-keyword.component';
 import { FiltersComponent } from './core/pages/filters/filters.component';
-
 
 @NgModule({
   declarations: [
@@ -89,17 +91,15 @@ import { FiltersComponent } from './core/pages/filters/filters.component';
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              environment.GOOGLE_CLIENT_ID
-            )
-          },
+            provider: new GoogleLoginProvider(environment.GOOGLE_CLIENT_ID)
+          }
         ],
         onError: (err) => {
           console.error(err);
         }
-      } as SocialAuthServiceConfig,
+      } as SocialAuthServiceConfig
     }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class HttpService {
-
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   readonly ROOT_URL;
 
   constructor(private http: HttpClient) {
@@ -20,13 +20,13 @@ export class HttpService {
     });
   }
 
-  post(uri: string, body: Object): Observable<any>  {
+  post(uri: string, body: object): Observable<any> {
     return this.http.post(`${this.ROOT_URL}/${uri}`, body, {
       headers: this.headers
     });
   }
 
-  patch(uri: string, body: Object) {
+  patch(uri: string, body: object) {
     return this.http.patch(`${this.ROOT_URL}/${uri}`, body, {
       headers: this.headers
     });
@@ -46,9 +46,9 @@ export class HttpService {
 
     const token = userData.token;
     const headers = new HttpHeaders({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       'x-access-token': token
     });
     return headers;
   }
-
 }

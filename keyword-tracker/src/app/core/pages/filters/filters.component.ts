@@ -13,10 +13,9 @@ import { showLoading } from 'src/app/store/actions';
   styleUrls: ['./filters.component.scss']
 })
 export class FiltersComponent implements OnInit {
-
   hasError = false;
   errMsg = 'Please type Numbers only';
-  hasFilters: boolean = false;
+  hasFilters = false;
   typ = '';
   options = ['M', 'T'];
 
@@ -35,7 +34,6 @@ export class FiltersComponent implements OnInit {
     to: new FormControl<number | null>(null)
   });
 
-
   filterForm = new FormGroup({
     suchvolumen: this.suchvolumen,
     position: this.position,
@@ -47,13 +45,15 @@ export class FiltersComponent implements OnInit {
     private keywordService: KeywordService,
     private dialog: MatDialog,
     private store: Store<{ showLoading: boolean }>
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.keywordService.hasFilters
-      .subscribe(value => this.hasFilters = value);
-    this.keywordService.getFilters
-      .subscribe((value: IFilters) => this.initFiltersForm(value));
+    this.keywordService.hasFilters.subscribe(
+      (value) => (this.hasFilters = value)
+    );
+    this.keywordService.getFilters.subscribe((value: IFilters) =>
+      this.initFiltersForm(value)
+    );
   }
 
   onSearch(form: FormGroup) {
@@ -80,27 +80,28 @@ export class FiltersComponent implements OnInit {
       from: filters.impressions.from || null,
       to: filters.impressions.to
     });
-    this.filterForm.controls['keywordTyp'].setValue(filters.keywordTyp)
+    this.filterForm.controls['keywordTyp'].setValue(filters.keywordTyp);
   }
 
   trimValues(obj: any) {
+    // eslint-disable-next-line guard-for-in
     for (const key in obj) {
       for (const val in obj[key]) {
         if (obj[key][val] !== null && obj[key][val] !== '') {
-          if (isNaN(parseInt(obj[key][val]))) {
+          if (isNaN(parseInt(obj[key][val], 10))) {
             this.hasError = true;
             setTimeout(() => {
               this.hasError = false;
-            }, 3000)
+            }, 3000);
             return;
           }
           obj[key][val] = Number(obj[key][val]);
         } else if (obj[key][val] === '') {
-          obj[key][val] = null
+          obj[key][val] = null;
         }
       }
     }
-    return obj
+    return obj;
   }
 
   getFiltered(form: any) {
@@ -108,12 +109,11 @@ export class FiltersComponent implements OnInit {
 
     this.keywordService.setFilters = form;
     const params = new HttpParams();
-    this.keywordService.fetchAll(params, this.hasFilters, form)
-    this.dialog.closeAll()
+    this.keywordService.fetchAll(params, this.hasFilters, form);
+    this.dialog.closeAll();
   }
 
   changeTyp(value: string) {
     this.typ = value;
   }
-
 }

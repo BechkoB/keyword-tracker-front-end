@@ -8,18 +8,12 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./nav.component.scss']
 })
 export class NavComponent implements OnInit {
+  constructor(private userService: UserService, private router: Router) {}
 
-  constructor(
-    private userService: UserService,
-    private router: Router
-  ) { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   onLogout() {
     this.userService.onLogout();
     this.router.navigateByUrl('login');
   }
-
 }

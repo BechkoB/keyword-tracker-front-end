@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  GOOGLE_CLIENT_ID: '943813533296-fdfpko2k3ut3gthqadlovpjofg7cggi3.apps.googleusercontent.com',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  GOOGLE_CLIENT_ID:
+    '943813533296-fdfpko2k3ut3gthqadlovpjofg7cggi3.apps.googleusercontent.com',
   rootUrl: 'http://localhost:3030',
   mainUrl: 'https://www.hochzeitsportal24.de'
 };

@@ -4,6 +4,5 @@ export interface IGoogleUser {
     email: string;
     name: string;
     tokenExpiresIn: number;
-  }
-
+  };
 }

@@ -13,23 +13,23 @@ import { hideLoading, showLoading } from './store/actions';
 export class AppComponent implements OnInit {
   title = 'keyword-tracker';
   hasUser = false;
-  loading$: boolean = false;
+  loading$ = false;
   loginStatus$: Observable<boolean>;
   userName: string;
 
   user: IUser;
 
-  constructor (
+  constructor(
     private store: Store<{ showLoading: boolean }>,
     private userService: UserService
-    ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.store.select('showLoading').subscribe(state => {
+    this.store.select('showLoading').subscribe((state) => {
       Promise.resolve().then(() => {
         this.loading$ = state;
-      })
-    })
+      });
+    });
     this.user = JSON.parse(localStorage.getItem('userData') as string);
     if (this.user) {
       this.userService.userLoggedIn = true;
@@ -38,5 +38,4 @@ export class AppComponent implements OnInit {
     this.loginStatus$ = this.userService.hasUserLoggedIn;
     this.store.dispatch(hideLoading());
   }
-
 }

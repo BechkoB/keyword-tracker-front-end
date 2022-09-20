@@ -7,8 +7,6 @@ import { UserService } from 'src/app/services/user.service';
 import { take } from 'rxjs';
 import { Router } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -18,7 +16,7 @@ export class LoginComponent implements OnInit {
   hide = true;
   hasError = false;
   user: SocialUser;
-  errMsg: string = 'Something went wrong!';
+  errMsg = 'Something went wrong!';
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required]),
@@ -29,9 +27,8 @@ export class LoginComponent implements OnInit {
     private userService: UserService,
     private store: Store<{ showLoading: boolean }>,
     private router: Router,
-    private authService: SocialAuthService,
-
-  ) { }
+    private authService: SocialAuthService
+  ) {}
 
   ngOnInit(): void {
     this.authService.authState.subscribe((user) => {
@@ -41,8 +38,8 @@ export class LoginComponent implements OnInit {
         return;
       }
       this.user = user;
-      this.userService.isUserRegistered(user.email).then(result => {
-        result.pipe(take(1)).subscribe(response => {
+      this.userService.isUserRegistered(user.email).then((result) => {
+        result.pipe(take(1)).subscribe((response) => {
           if (response.success) {
             this.userService.setUserData(response.user);
             this.router.navigateByUrl('/');
@@ -54,7 +51,7 @@ export class LoginComponent implements OnInit {
             this.store.dispatch(hideLoading());
             return;
           }
-        })
+        });
       });
     });
   }
@@ -62,7 +59,8 @@ export class LoginComponent implements OnInit {
   onLogin(form: FormGroup): void {
     const { email, password } = form.value;
     this.store.dispatch(showLoading());
-    this.userService.login(email, password)
+    this.userService
+      .login(email, password)
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -76,5 +74,4 @@ export class LoginComponent implements OnInit {
         }
       });
   }
-
 }
