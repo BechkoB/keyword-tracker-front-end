@@ -12,13 +12,15 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AddKeywordComponent } from '../../pages/add-keyword/add-keyword.component';
 import { FiltersComponent } from '../../pages/filters/filters.component';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { Store } from '@ngrx/store';
 import { showLoading } from 'src/app/store/actions';
 import { environment } from '../../../../environments/environment';
+import { DatePickerComponent } from '../../pages/date-picker/date-picker.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-keywords',
@@ -50,7 +52,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private keywordsService: KeywordService,
+    private keywordService: KeywordService,
     private dialog: MatDialog,
     private store: Store<{ showLoading: boolean }>
   ) {}
@@ -58,10 +60,10 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this._destroy$ = new Subject<any>();
     this.getData(0, 0);
-    this.keywordsService.hasFilters
+    this.keywordService.hasFilters
       .pipe(takeUntil(this._destroy$))
       .subscribe((value) => (this.hasFilters = value));
-    this.keywordsService.getFilters
+    this.keywordService.getFilters
       .pipe(takeUntil(this._destroy$))
       .subscribe((value: IFilters) => (this.filters = value));
   }
@@ -72,7 +74,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.params = this.params.set('order', this.sort.active);
       this.params = this.params.set('direction', this.sort.direction);
       console.log(this.params);
-      this.keywordsService.fetchAll(this.params, this.hasFilters, this.filters);
+      this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
     });
   }
 
@@ -82,12 +84,12 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     params = params.set('skip', skip);
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     take !== 0 ? (params = params.set('take', take)) : null;
-    this.keywordsService.fetchAll(params, this.hasFilters, undefined);
+    this.keywordService.fetchAll(params, this.hasFilters, undefined);
     this.setTable();
   }
 
   setTable() {
-    this.keywordsService.keywords
+    this.keywordService.keywords
       .pipe(takeUntil(this._destroy$))
       .subscribe((data: any) => {
         console.log(data, 'data');
@@ -110,7 +112,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dataSource.filter = filterValue.trim().toLowerCase();
     this.filters.keyword = filterValue;
     this.hasFilters = true;
-    this.keywordsService.fetchAll(this.params, true, this.filters);
+    this.keywordService.fetchAll(this.params, true, this.filters);
 
     if (this.dataSource.paginator) {
       this.paginator.pageIndex = 0;
@@ -130,7 +132,7 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
     const take = event.pageSize;
     this.params = this.params.set('skip', skip).set('take', take);
-    this.keywordsService.fetchAll(this.params, this.hasFilters, this.filters);
+    this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
   }
 
   addKeyword(): void {
@@ -147,12 +149,31 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  dateChange() {
+    const dialogRef = this.dialog.open(DatePickerComponent, {
+      width: '450px',
+      height: '540px',
+      panelClass: 'date-modal'
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.hasFilters = true;
+        this.filters.dates.start = moment(result.start).format('YYYY-MM-DD');
+        this.filters.dates.end = moment(result.end).format('YYYY-MM-DD');
+        // this.keywordService.setFilters = this.filters;
+        this.keywordService.fetchAll(this.params, true, this.filters);
+      }
+    });
+  }
+
   resetFilters(input: HTMLInputElement) {
     this.hasFilters = false;
-    this.keywordsService.setFilters = {
+    this.keywordService.setFilters = {
       suchvolumen: { from: null, to: null },
       position: { from: null, to: null },
       impressions: { from: null, to: null },
+      dates: { start: null, end: null },
       keywordTyp: '',
       keyword: ''
     };

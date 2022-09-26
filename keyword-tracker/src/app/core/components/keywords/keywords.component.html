@@ -16,15 +16,22 @@
         matTooltip="Clear Filters"
         (click)="resetFilters(input)"
       >
-      Clear Filters
-      <mat-icon
-        class="relative top-0.5 w-1 h-1"
-        aria-hidden="false"
-        aria-label="Example home icon"
-        fontIcon="close"
-      ></mat-icon>
-    </button>
+        Clear Filters
+        <mat-icon
+          class="relative top-0.5 w-1 h-1"
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="close"
+        ></mat-icon>
+      </button>
 
+      <button
+        class="btn my-4 mx-4"
+        matTooltip="Choose date range"
+        (click)="dateChange()"
+      >
+        Date
+      </button>
       <button
         class="btn my-4 mx-4"
         matTooltip="Filters"

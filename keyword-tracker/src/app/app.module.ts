@@ -14,7 +14,11 @@ import { LoginComponent } from './core/pages/login/login.component';
 import { KeywordsComponent } from './core/components/keywords/keywords.component';
 import { NavComponent } from './core/components/nav/nav.component';
 
-import { MatRippleModule } from '@angular/material/core';
+import {
+  DateAdapter,
+  MatRippleModule,
+  MatNativeDateModule
+} from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
@@ -31,18 +35,21 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
-
+import { MatRadioModule } from '@angular/material/radio';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
-import { environment } from '../environments/environment';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { StoreModule } from '@ngrx/store';
 import { appReducer } from './store/reducers';
 import { AddKeywordComponent } from './core/pages/add-keyword/add-keyword.component';
 import { FiltersComponent } from './core/pages/filters/filters.component';
+import { DatePickerComponent } from './core/pages/date-picker/date-picker.component';
 
+import { environment } from '../environments/environment';
+import { DateAdapterComponent } from './shared/date-adapter/date-adapter.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +58,8 @@ import { FiltersComponent } from './core/pages/filters/filters.component';
     NavComponent,
     LoadingSpinnerComponent,
     AddKeywordComponent,
-    FiltersComponent
+    FiltersComponent,
+    DatePickerComponent
   ],
   imports: [
     MatButtonModule,
@@ -63,11 +71,14 @@ import { FiltersComponent } from './core/pages/filters/filters.component';
     MatCardModule,
     MatTabsModule,
     BrowserAnimationsModule,
+    MatNativeDateModule,
+    MatRadioModule,
     HttpClientModule,
     SocialLoginModule,
     MatProgressSpinnerModule,
     BrowserModule,
     AppRoutingModule,
+    MatDatepickerModule,
     MatRippleModule,
     MatListModule,
     MatTooltipModule,
@@ -98,7 +109,8 @@ import { FiltersComponent } from './core/pages/filters/filters.component';
           console.error(err);
         }
       } as SocialAuthServiceConfig
-    }
+    },
+    { provide: DateAdapter, useClass: DateAdapterComponent }
   ],
   bootstrap: [AppComponent]
 })

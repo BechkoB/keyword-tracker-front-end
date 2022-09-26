@@ -1,0 +1,77 @@
+<div>
+  <section class="w-full h-24 bg-gray-500 p-6">
+    <h1 class="text-white text-xl font-bold">Date Range</h1>
+  </section>
+
+  <section class="pt-5 pl-7">
+    <mat-radio-group
+      aria-labelledby="example-radio-group-label"
+      class="example-radio-group"
+      [(ngModel)]="dateRange"
+    >
+      <mat-radio-button
+        class="m-2"
+        *ngFor="let range of ranges"
+        [id]="range.title"
+        [value]="range"
+      >
+        {{ range.description }}
+      </mat-radio-button>
+    </mat-radio-group>
+    <div
+      class="flex ml-6"
+      [formGroup]="calendar"
+    >
+      <mat-form-field class="date">
+        <mat-label>Start date</mat-label>
+        <input
+          matInput
+          [matDatepickerFilter]="dateFilter"
+          [matDatepicker]="startDate"
+          formControlName="start"
+          (dateChange)="onDateChange()"
+          (click)="toggleBtn()"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startDate></mat-datepicker>
+      </mat-form-field>
+      <p class="pt-4 px-4">-</p>
+      <mat-form-field class="date">
+        <mat-label>End date</mat-label>
+        <input
+          matInput
+          [matDatepickerFilter]="dateFilter"
+          [matDatepicker]="endDate"
+          formControlName="end"
+          (dateChange)="onDateChange()"
+          (click)="toggleBtn()"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endDate></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <mat-error *ngIf="hasError" class="ml-4">Invalid dates entered!</mat-error>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button
+        mat-button
+        [disabled]="hasError"
+        [mat-dialog-close]="
+          dateRange?.title === 'custom' ? calendar.value : dateRange?.dates
+        "
+      >
+        Apply
+      </button>
+    </mat-dialog-actions>
+    <!-- <section class="buttons">
+      <button mat-button>Cancel</button>
+      <button mat-button>Apply</button>
+    </section> -->
+  </section>
+</div>

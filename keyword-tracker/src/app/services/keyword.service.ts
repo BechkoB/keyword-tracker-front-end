@@ -15,6 +15,7 @@ export class KeywordService {
     suchvolumen: { from: null, to: null },
     position: { from: null, to: null },
     impressions: { from: null, to: null },
+    dates: { start: null, end: null },
     keywordTyp: '',
     keyword: ''
   };

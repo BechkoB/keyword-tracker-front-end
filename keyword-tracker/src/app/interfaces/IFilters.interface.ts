@@ -11,6 +11,10 @@ export interface IFilters {
     from: number | null;
     to: number | null;
   };
+  dates: {
+    start: string | null;
+    end: string | null;
+  };
   keywordTyp: string;
   keyword: string;
 }

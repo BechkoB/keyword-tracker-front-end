@@ -109,7 +109,6 @@ export class FiltersComponent implements OnInit {
 
   getFiltered(form: any) {
     this.store.dispatch(showLoading());
-
     this.keywordService.setFilters = form;
     const params = new HttpParams();
     this.keywordService.fetchAll(params, this.hasFilters, form);
