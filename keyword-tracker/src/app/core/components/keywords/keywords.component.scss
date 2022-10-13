@@ -32,6 +32,9 @@ input {
   letter-spacing: 1px;
   font-size: 16px;
   font-weight: bold;
+  position: relative;
+  left: 49%;
+  height: 2rem;
 }
 
 .example-loading-shade {
@@ -45,4 +48,15 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.aggregates {
+  color: rgba(252, 64, 64, 0.774);
+}
+
+
+.mat-row:hover .mat-cell {
+  cursor: pointer;
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
 }

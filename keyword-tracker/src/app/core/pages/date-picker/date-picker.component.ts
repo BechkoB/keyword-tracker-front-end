@@ -3,6 +3,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { DateFilterFn } from '@angular/material/datepicker';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as moment from 'moment';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
+import { KeywordService } from 'src/app/services/keyword.service';
 
 interface IDialogData {
   startDate: string;
@@ -20,6 +22,7 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
   start: moment.MomentInput = '';
   end: moment.MomentInput = '';
   endDate = moment().format('YYYY-MM-DD');
+  filters: IFilters;
 
   calendar = new FormGroup({
     start: new FormControl<moment.MomentInput | null>(null),
@@ -69,9 +72,24 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
     { title: 'custom', description: 'Custom' }
   ];
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: IDialogData) {}
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: IDialogData,
+    private keywordService: KeywordService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.keywordService.getFilters.subscribe(
+      (value: IFilters) => (this.filters = value)
+    );
+    if (this.filters.dates.start === this.start) {
+      this.dateRange = this.ranges[0];
+    } else {
+      this.dateRange = this.ranges.find(
+        (item) => item.dates?.start === this.filters.dates.start
+      );
+    }
+    console.log(this.filters);
+  }
 
   ngAfterViewInit(): void {
     this.start = this.calendar.value.start;

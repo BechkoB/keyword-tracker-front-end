@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
+import * as moment from 'moment';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { KeywordService } from 'src/app/services/keyword.service';
 import { showLoading } from 'src/app/store/actions';
@@ -18,6 +19,8 @@ export class FiltersComponent implements OnInit {
   hasFilters = false;
   typ = '';
   options = ['M', 'T'];
+  endDate = moment().format('YYYY-MM-DD');
+  startDate = moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD');
 
   suchvolumen = new FormGroup({
     from: new FormControl<number | null>(null),
@@ -34,10 +37,16 @@ export class FiltersComponent implements OnInit {
     to: new FormControl<number | null>(null)
   });
 
+  dates = new FormGroup({
+    start: new FormControl(this.startDate),
+    end: new FormControl(this.endDate)
+  });
+
   filterForm = new FormGroup({
     suchvolumen: this.suchvolumen,
     position: this.position,
     impressions: this.impressions,
+    dates: this.dates,
     keywordTyp: new FormControl('')
   });
 
@@ -78,6 +87,10 @@ export class FiltersComponent implements OnInit {
     this.impressions.patchValue({
       from: filters.impressions.from || null,
       to: filters.impressions.to
+    });
+    this.dates.patchValue({
+      start: filters.dates.start || this.startDate,
+      end: filters.dates.end || this.endDate
     });
     this.filterForm.controls['keywordTyp'].setValue(filters.keywordTyp);
   }

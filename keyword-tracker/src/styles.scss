@@ -38,6 +38,10 @@ body {
   height: 50px;
 }
 
+.mat-form-field-label-wrapper {
+  overflow: unset !important;
+}
+
 .mat-form-field-appearance-outline .mat-form-field-label {
   margin-top: -0.5em;
 }

@@ -50,6 +50,12 @@ import { DatePickerComponent } from './core/pages/date-picker/date-picker.compon
 
 import { environment } from '../environments/environment';
 import { DateAdapterComponent } from './shared/date-adapter/date-adapter.component';
+import { KeywordDetailsComponent } from './core/components/keyword-details/keyword-details.component';
+
+import { TransformString } from './pipes/transform-string.pipe';
+import { DateComponent } from './core/components/date/date.component';
+import { EditKeywordComponent } from './core/pages/edit-keyword/edit-keyword.component';
+import { UrlDetailsComponent } from './core/components/url-details/url-details.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,7 +65,12 @@ import { DateAdapterComponent } from './shared/date-adapter/date-adapter.compone
     LoadingSpinnerComponent,
     AddKeywordComponent,
     FiltersComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    KeywordDetailsComponent,
+    TransformString,
+    DateComponent,
+    EditKeywordComponent,
+    UrlDetailsComponent
   ],
   imports: [
     MatButtonModule,
@@ -110,7 +121,8 @@ import { DateAdapterComponent } from './shared/date-adapter/date-adapter.compone
         }
       } as SocialAuthServiceConfig
     },
-    { provide: DateAdapter, useClass: DateAdapterComponent }
+    { provide: DateAdapter, useClass: DateAdapterComponent },
+    KeywordsComponent
   ],
   bootstrap: [AppComponent]
 })

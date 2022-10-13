@@ -1,0 +1,34 @@
+<h1 class="text-center text-3xl font-bold my-6">
+  "{{ data.name }}" bearbeiten
+</h1>
+
+<form
+  [formGroup]="keywordForm"
+  class="flex flex-col justify-center align-middle content-center"
+  (submit)="editKeyword(keywordForm)"
+>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>URL</mat-label>
+    <input matInput formControlName="url"/>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>Suchvolumen</mat-label>
+    <input matInput formControlName="suchvolumen" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>Typ</mat-label>
+    <input matInput formControlName="typ" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="input">
+    <mat-label>Tracken</mat-label>
+    <input matInput formControlName="tracken" />
+  </mat-form-field>
+  <button
+    [disabled]="keywordForm.invalid"
+    type="submit"
+    class="justify-center cursor-pointer bg-red-300 rounded text-white w-56 py-2 px-4 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
+    [mat-dialog-close]="keywordForm"
+  >
+    Speichern
+  </button>
+</form>

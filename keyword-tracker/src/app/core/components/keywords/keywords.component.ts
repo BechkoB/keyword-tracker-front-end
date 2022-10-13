@@ -3,7 +3,8 @@ import {
   OnInit,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  Output
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { IKeyword } from 'src/app/interfaces/IKeyword.interfaces';
@@ -18,9 +19,9 @@ import { FiltersComponent } from '../../pages/filters/filters.component';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { Store } from '@ngrx/store';
 import { showLoading } from 'src/app/store/actions';
-import { environment } from '../../../../environments/environment';
 import { DatePickerComponent } from '../../pages/date-picker/date-picker.component';
 import * as moment from 'moment';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-keywords',
@@ -28,13 +29,11 @@ import * as moment from 'moment';
   styleUrls: ['./keywords.component.scss']
 })
 export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
+  type = '';
   private _destroy$: Subject<any>;
   hasFilters = false;
   displayedColumns: string[] = [
     'key',
-    'suchvolumen',
-    'url',
-    'typ',
     'position',
     'impressions',
     'clicks',
@@ -42,11 +41,22 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   length = 0;
   dataSource: MatTableDataSource<any>;
+  totalImpressions: string;
+  totalClicks: string;
+  avgCtr: number;
+  avgPosition: number;
+
   pageSize = 10;
   isLoadingResults = true;
   pageSizeOptions: [5, 10, 20, 50];
   filters: IFilters;
-  params = new HttpParams().set('order', '').set('direction', '');
+  params = new HttpParams()
+    .set('order', '')
+    .set('direction', '')
+    .set('skip', 0)
+    .set('take', 10);
+  endDate = moment().format('YYYY-MM-DD');
+  startDate = moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD');
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -54,18 +64,24 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private keywordService: KeywordService,
     private dialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
   ngOnInit(): void {
+    this.type = this.route.snapshot.data['type'];
+    this.params = this.params.set('type', this.type);
+    console.log(this.route.snapshot.data['type'], 'route data');
     this._destroy$ = new Subject<any>();
-    this.getData(0, 0);
     this.keywordService.hasFilters
       .pipe(takeUntil(this._destroy$))
       .subscribe((value) => (this.hasFilters = value));
-    this.keywordService.getFilters
-      .pipe(takeUntil(this._destroy$))
-      .subscribe((value: IFilters) => (this.filters = value));
+    this.keywordService.getFilters.subscribe(
+      (value: IFilters) => (this.filters = value)
+    );
+    this.getData();
+    this.dataSource.paginator = this.paginator;
   }
 
   ngAfterViewInit(): void {
@@ -73,35 +89,28 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.store.dispatch(showLoading());
       this.params = this.params.set('order', this.sort.active);
       this.params = this.params.set('direction', this.sort.direction);
-      console.log(this.params);
       this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
     });
   }
 
-  async getData(skip: number, take: number) {
+  async getData() {
     this.store.dispatch(showLoading());
-    let params = new HttpParams();
-    params = params.set('skip', skip);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    take !== 0 ? (params = params.set('take', take)) : null;
-    this.keywordService.fetchAll(params, this.hasFilters, undefined);
+    this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
     this.setTable();
   }
 
   setTable() {
     this.keywordService.keywords
       .pipe(takeUntil(this._destroy$))
-      .subscribe((data: any) => {
-        console.log(data, 'data');
-        if (data.data) {
-          data.data = this.removeUrl(data.data);
-          this.length = data.length;
-          this.dataSource = new MatTableDataSource(data.data);
-          this.dataSource.sort = this.sort;
-        } else {
-          data = this.removeUrl(data);
-          this.dataSource = new MatTableDataSource(data);
-          this.dataSource.sort = this.sort;
+      .subscribe((res: any) => {
+        this.length = res.length;
+        this.dataSource = new MatTableDataSource(res.data);
+        this.dataSource.sort = this.sort;
+        if (res.result) {
+          this.totalImpressions = res.result.totalImpressions;
+          this.totalClicks = res.result.totalClicks;
+          this.avgPosition = res.result.avgPosition;
+          this.avgCtr = res.result.avgCtr;
         }
       });
   }
@@ -120,18 +129,11 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  removeUrl(array: IKeyword[]): IKeyword[] {
-    array.map((item: IKeyword) => {
-      item.url = item.url.replace(environment.mainUrl, '');
-    });
-    return array;
-  }
-
   onPageChange(event: PageEvent): void {
     this.store.dispatch(showLoading());
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
-    const take = event.pageSize;
-    this.params = this.params.set('skip', skip).set('take', take);
+    this.pageSize = event.pageSize;
+    this.params = this.params.set('skip', skip).set('take', this.pageSize);
     this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
   }
 
@@ -149,36 +151,30 @@ export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  dateChange() {
-    const dialogRef = this.dialog.open(DatePickerComponent, {
-      width: '450px',
-      height: '540px',
-      panelClass: 'date-modal'
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.hasFilters = true;
-        this.filters.dates.start = moment(result.start).format('YYYY-MM-DD');
-        this.filters.dates.end = moment(result.end).format('YYYY-MM-DD');
-        // this.keywordService.setFilters = this.filters;
-        this.keywordService.fetchAll(this.params, true, this.filters);
-      }
-    });
-  }
-
   resetFilters(input: HTMLInputElement) {
     this.hasFilters = false;
     this.keywordService.setFilters = {
       suchvolumen: { from: null, to: null },
       position: { from: null, to: null },
       impressions: { from: null, to: null },
-      dates: { start: null, end: null },
+      dates: { start: this.startDate, end: this.endDate },
       keywordTyp: '',
       keyword: ''
     };
     input.value = '';
-    this.getData(0, 0);
+    this.params = this.params.set('skip', 0);
+    this.getData();
+    this.paginator.pageIndex = 0;
+    this.dataSource.paginator?.firstPage();
+  }
+
+  details(row: any) {
+    console.log(row.name);
+    this.router.navigateByUrl(`${this.type}/details/${row.id}/'${row.name}'`);
+  }
+
+  urlDetails(row: any) {
+    console.log(row);
   }
 
   ngOnDestroy(): void {

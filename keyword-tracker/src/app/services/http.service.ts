@@ -26,7 +26,7 @@ export class HttpService {
     });
   }
 
-  patch(uri: string, body: object) {
+  patch(uri: string, body: object): Observable<any> {
     return this.http.patch(`${this.ROOT_URL}/${uri}`, body, {
       headers: this.headers
     });
