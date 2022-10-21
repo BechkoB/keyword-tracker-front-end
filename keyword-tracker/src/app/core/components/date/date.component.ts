@@ -8,7 +8,6 @@ import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { KeywordService } from 'src/app/services/keyword.service';
 import { showLoading } from 'src/app/store/actions';
 import { DatePickerComponent } from '../../pages/date-picker/date-picker.component';
-import { KeywordsComponent } from '../keywords/keywords.component';
 
 @Component({
   selector: 'app-date',
@@ -25,8 +24,7 @@ export class DateComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private store: Store<{ showLoading: boolean }>,
-    private keywordService: KeywordService,
-    private keywordComponent: KeywordsComponent
+    private keywordService: KeywordService
   ) {}
 
   ngOnInit(): void {
@@ -52,9 +50,8 @@ export class DateComponent implements OnInit {
         this.params = this.params.set('skip', 0);
         this.keywordService.fetchAll(this.params, true, this.filters);
         console.log(this.paginator);
-        this.paginator.pageIndex = 0;
-        this.paginator?.firstPage();
-        console.log(this.filters);
+        // this.paginator.pageIndex = 0;
+        // this.paginator?.firstPage();
       }
     });
   }

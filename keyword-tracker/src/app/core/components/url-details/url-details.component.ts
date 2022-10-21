@@ -5,8 +5,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs';
 import { IUrl } from 'src/app/interfaces/IKeyword.interfaces';
-import { KeywordService } from 'src/app/services/keyword.service';
-import { EditKeywordComponent } from '../../pages/edit-keyword/edit-keyword.component';
+import { UrlService } from 'src/app/services/url.service';
+import { EditComponent } from '../../pages/edit/edit.component';
 
 @Component({
   selector: 'app-urls',
@@ -31,7 +31,7 @@ export class UrlDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private keywordService: KeywordService
+    private urlService: UrlService
   ) {
     this.urlId = this.route.snapshot.params['id'];
 
@@ -40,8 +40,8 @@ export class UrlDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.urlId);
-    this.keywordService
-      .getKeywordById(this.urlId, undefined, 'urls')
+    this.urlService
+      .getUrlById(this.urlId)
       .pipe(take(1))
       .subscribe((result: IUrl[]) => {
         console.log(result);
@@ -53,7 +53,7 @@ export class UrlDetailsComponent implements OnInit {
   }
 
   edit(url: IUrl | undefined) {
-    const dialogRef = this.dialog.open(EditKeywordComponent, {
+    const dialogRef = this.dialog.open(EditComponent, {
       width: '800px',
       height: '500px',
       data: {

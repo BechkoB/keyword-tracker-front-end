@@ -23,25 +23,26 @@ export class UserService {
       this.httpService.post('users/login', {
         email,
         password
-      }) as Observable<IUser>
+      }) as Observable<{ user: IUser; token: string }>
     ).pipe(
       first(),
-      map((user: IUser) => {
+      map((user: { user: IUser; token: string }) => {
         return this.setUserData(user);
       })
     );
   }
 
-  setUserData(user: IUser): IUser {
+  setUserData(payload: { user: IUser; token: string }): IUser {
     this._loginStatus.next(true);
     const expireTime = 1555200000;
-    user.tokenExpiresIn = new Date().getTime() + expireTime;
-    localStorage.setItem('userData', JSON.stringify(user));
-    return user;
+    payload.user.tokenExpiresIn = new Date().getTime() + expireTime;
+    localStorage.setItem('userData', JSON.stringify(payload.user));
+    localStorage.setItem('token', JSON.stringify(payload.token));
+    return payload.user;
   }
 
   async isUserRegistered(email: string): Promise<Observable<any>> {
-    const result = this.httpService.get(`users/email/${email}`);
+    const result = this.httpService.get(`users/verify/${email}`);
     return result;
   }
 

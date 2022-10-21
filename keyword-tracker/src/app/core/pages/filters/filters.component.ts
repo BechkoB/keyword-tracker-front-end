@@ -20,6 +20,7 @@ export class FiltersComponent implements OnInit {
   typ = '';
   options = ['M', 'T'];
   endDate = moment().format('YYYY-MM-DD');
+
   startDate = moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD');
 
   suchvolumen = new FormGroup({
@@ -57,12 +58,16 @@ export class FiltersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.endDate, 'endDate');
+    console.log(this.startDate, 'startDate');
+
     this.keywordService.hasFilters.subscribe(
       (value) => (this.hasFilters = value)
     );
-    this.keywordService.getFilters.subscribe((value: IFilters) =>
-      this.initFiltersForm(value)
-    );
+    this.keywordService.getFilters.subscribe((value: IFilters) => {
+      this.initFiltersForm(value);
+      console.log('filters --->' + JSON.stringify(value));
+    });
   }
 
   onSearch(form: FormGroup) {
@@ -97,7 +102,7 @@ export class FiltersComponent implements OnInit {
 
   trimValues(obj: any) {
     for (const key in obj) {
-      if (key !== 'keywordTyp') {
+      if (key !== 'keywordTyp' && key !== 'dates') {
         // eslint-disable-next-line guard-for-in
         for (const val in obj[key]) {
           console.log('obj[key][val]: ' + obj[key][val]);
@@ -121,6 +126,7 @@ export class FiltersComponent implements OnInit {
   }
 
   getFiltered(form: any) {
+    console.log(form);
     this.store.dispatch(showLoading());
     this.keywordService.setFilters = form;
     const params = new HttpParams();

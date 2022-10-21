@@ -40,8 +40,8 @@ export class LoginComponent implements OnInit {
       this.user = user;
       this.userService.isUserRegistered(user.email).then((result) => {
         result.pipe(take(1)).subscribe((response) => {
-          if (response.success) {
-            this.userService.setUserData(response.user);
+          if (response.user) {
+            this.userService.setUserData(response);
             this.router.navigateByUrl('/');
             this.store.dispatch(hideLoading());
           } else {

@@ -3,11 +3,9 @@ import {
   OnInit,
   ViewChild,
   AfterViewInit,
-  OnDestroy,
-  Output
+  OnDestroy
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { IKeyword } from 'src/app/interfaces/IKeyword.interfaces';
 import { KeywordService } from 'src/app/services/keyword.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -19,16 +17,15 @@ import { FiltersComponent } from '../../pages/filters/filters.component';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { Store } from '@ngrx/store';
 import { showLoading } from 'src/app/store/actions';
-import { DatePickerComponent } from '../../pages/date-picker/date-picker.component';
 import * as moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-keywords',
-  templateUrl: './keywords.component.html',
-  styleUrls: ['./keywords.component.scss']
+  selector: 'app-main',
+  templateUrl: './main.component.html',
+  styleUrls: ['./main.component.scss']
 })
-export class KeywordsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   type = '';
   private _destroy$: Subject<any>;
   hasFilters = false;

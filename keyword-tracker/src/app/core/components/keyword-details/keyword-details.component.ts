@@ -4,9 +4,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { IKeyword } from 'src/app/interfaces/IKeyword.interfaces';
 import { KeywordService } from 'src/app/services/keyword.service';
-import { EditKeywordComponent } from '../../pages/edit-keyword/edit-keyword.component';
+import { EditComponent } from '../../pages/edit/edit.component';
 
 @Component({
   selector: 'app-keyword-details',
@@ -15,7 +16,7 @@ import { EditKeywordComponent } from '../../pages/edit-keyword/edit-keyword.comp
 })
 export class KeywordDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
-
+  filters: IFilters;
   dataSource: MatTableDataSource<IKeyword>;
   displayedColumns: string[] = [
     'url',
@@ -37,8 +38,11 @@ export class KeywordDetailsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.keywordService.getFilters.subscribe(
+      (value: IFilters) => (this.filters = value)
+    );
     this.keywordService
-      .getKeywordById(this.keywordId, this.keywordName, 'keywords')
+      .getKeywordById(this.keywordId, this.keywordName, this.filters)
       .pipe(take(1))
       .subscribe((result: IKeyword[]) => {
         console.log(result);
@@ -51,7 +55,7 @@ export class KeywordDetailsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {}
 
   edit(keyword: IKeyword | undefined) {
-    const dialogRef = this.dialog.open(EditKeywordComponent, {
+    const dialogRef = this.dialog.open(EditComponent, {
       width: '800px',
       height: '500px',
       data: {

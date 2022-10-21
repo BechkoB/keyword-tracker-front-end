@@ -9,6 +9,7 @@ export interface IKeyword {
   suchvolumen: number;
   typ: string;
   urls: IUrl[];
+  designated: string;
   tracken: boolean;
 }
 

@@ -39,12 +39,10 @@ export class HttpService {
   }
 
   get headers(): HttpHeaders | Record<string, never> {
-    const userData = JSON.parse(localStorage.getItem('userData') as string);
-    if (!userData) {
+    const token = JSON.parse(localStorage.getItem('token') as string);
+    if (!token) {
       return {};
     }
-
-    const token = userData.token;
     const headers = new HttpHeaders({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'x-access-token': token

@@ -14,7 +14,21 @@
         }}"
       />
     </div>
-    <button
+
+    <div class="mt-6 flex">
+      <!-- <div class="mx-4 p-4 aggregates" matTooltip="Choose date range">
+        Total Impressions:
+        <section class="flex justify-end">
+          {{ totalImpressions }}
+        </section>
+      </div>
+      <div class="mx-4 p-4 aggregates" matTooltip="Choose date range">
+        Total Clicks:
+        <section class="flex justify-end">
+          {{ totalClicks }}
+        </section>
+      </div> -->
+          <button
       *ngIf="hasFilters"
       class="clear"
       matTooltip="Clear Filters"
@@ -29,19 +43,6 @@
         fontIcon="close"
       ></mat-icon>
     </button>
-    <div class="mt-6 flex">
-      <div class="mx-4 p-4 aggregates" matTooltip="Choose date range">
-        Total Impressions:
-        <section class="flex justify-end">
-          {{ totalImpressions }}
-        </section>
-      </div>
-      <div class="mx-4 p-4 aggregates" matTooltip="Choose date range">
-        Total Clicks:
-        <section class="flex justify-end">
-          {{ totalClicks }}
-        </section>
-      </div>
       <button
         class="btn my-4 mx-4"
         matTooltip="Filters"

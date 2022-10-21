@@ -11,7 +11,7 @@ import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './core/pages/login/login.component';
-import { KeywordsComponent } from './core/components/keywords/keywords.component';
+import { MainComponent } from './core/components/main/main.component';
 import { NavComponent } from './core/components/nav/nav.component';
 
 import {
@@ -54,13 +54,13 @@ import { KeywordDetailsComponent } from './core/components/keyword-details/keywo
 
 import { TransformString } from './pipes/transform-string.pipe';
 import { DateComponent } from './core/components/date/date.component';
-import { EditKeywordComponent } from './core/pages/edit-keyword/edit-keyword.component';
+import { EditComponent } from './core/pages/edit/edit.component';
 import { UrlDetailsComponent } from './core/components/url-details/url-details.component';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    KeywordsComponent,
+    MainComponent,
     NavComponent,
     LoadingSpinnerComponent,
     AddKeywordComponent,
@@ -69,7 +69,7 @@ import { UrlDetailsComponent } from './core/components/url-details/url-details.c
     KeywordDetailsComponent,
     TransformString,
     DateComponent,
-    EditKeywordComponent,
+    EditComponent,
     UrlDetailsComponent
   ],
   imports: [
@@ -122,7 +122,7 @@ import { UrlDetailsComponent } from './core/components/url-details/url-details.c
       } as SocialAuthServiceConfig
     },
     { provide: DateAdapter, useClass: DateAdapterComponent },
-    KeywordsComponent
+    MainComponent
   ],
   bootstrap: [AppComponent]
 })

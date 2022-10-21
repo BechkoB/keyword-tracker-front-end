@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
   name: 'transformString'
 })
 export class TransformString implements PipeTransform {
-  transform(string: string): string {
+  transform(string: string | undefined): string {
     if (string) {
       string = string.replace(environment.mainUrl, '');
       return string;
