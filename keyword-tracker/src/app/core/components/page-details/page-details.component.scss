@@ -10,11 +10,15 @@
 }
 
 table {
-  width: 80%;
+  width: 100%;
   background: none;
 }
 
 .divider {
   border-top: 2px solid black;
-  width: 80%;
+  width: 100%;
+}
+
+mat-paginator {
+  background: none;
 }

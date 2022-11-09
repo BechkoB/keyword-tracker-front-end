@@ -1,11 +1,11 @@
 import { HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import * as moment from 'moment';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
-import { KeywordService } from 'src/app/services/keyword.service';
+import { SharedService } from 'src/app/services/shared.service';
 import { showLoading } from 'src/app/store/actions';
 
 @Component({
@@ -20,84 +20,71 @@ export class FiltersComponent implements OnInit {
   typ = '';
   options = ['M', 'T'];
   endDate = moment().format('YYYY-MM-DD');
-
+  formObj: any;
   startDate = moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD');
 
-  suchvolumen = new FormGroup({
-    from: new FormControl<number | null>(null),
-    to: new FormControl<number | null>(null)
-  });
-
-  position = new FormGroup({
-    from: new FormControl<number | null>(null),
-    to: new FormControl<number | null>(null)
-  });
-
-  impressions = new FormGroup({
-    from: new FormControl<number | null>(null),
-    to: new FormControl<number | null>(null)
-  });
-
-  dates = new FormGroup({
-    start: new FormControl(this.startDate),
-    end: new FormControl(this.endDate)
-  });
-
   filterForm = new FormGroup({
-    suchvolumen: this.suchvolumen,
-    position: this.position,
-    impressions: this.impressions,
-    dates: this.dates,
-    keywordTyp: new FormControl('')
+    suchvolumen: new FormGroup({
+      from: new FormControl<number>(0),
+      to: new FormControl<number>(0)
+    }),
+    position: new FormGroup({
+      from: new FormControl<number>(0),
+      to: new FormControl<number>(0)
+    }),
+    impressions: new FormGroup({
+      from: new FormControl<number>(0),
+      to: new FormControl<number>(0)
+    }),
+    dates: new FormGroup({
+      start: new FormControl<string>(''),
+      end: new FormControl<string>('')
+    }),
+    queryTyp: new FormControl('')
   });
-
   constructor(
-    private keywordService: KeywordService,
+    @Inject(MAT_DIALOG_DATA) public data: string,
+    private sharedService: SharedService,
     private dialog: MatDialog,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
   ngOnInit(): void {
-    console.log(this.endDate, 'endDate');
-    console.log(this.startDate, 'startDate');
-
-    this.keywordService.hasFilters.subscribe(
+    this.sharedService.getFilters.subscribe((value: IFilters) => {
+      this.initFiltersForm(value);
+    });
+    this.sharedService.hasFilters.subscribe(
       (value) => (this.hasFilters = value)
     );
-    this.keywordService.getFilters.subscribe((value: IFilters) => {
-      this.initFiltersForm(value);
-      console.log('filters --->' + JSON.stringify(value));
-    });
   }
 
   onSearch(form: FormGroup) {
-    this.keywordService.hasFilterSubject.next(true);
-    let formObj = form.value;
-    formObj = this.trimValues(formObj);
-    if (formObj === undefined) {
+    this.sharedService.hasFilterSubject.next(true);
+    this.formObj = this.trimValues(form.value);
+    if (this.formObj === undefined) {
       return;
     }
-    this.getFiltered(formObj);
+    this.getFiltered(this.formObj);
   }
 
   initFiltersForm(filters: IFilters) {
-    this.suchvolumen.patchValue({
-      from: filters.suchvolumen.from || null,
+    this.filterForm.controls.suchvolumen.patchValue({
+      from: filters.suchvolumen.from,
       to: filters.suchvolumen.to
     });
-    this.position.patchValue({
-      from: filters.position.from || null,
+    this.filterForm.controls.position.patchValue({
+      from: filters.position.from,
       to: filters.position.to
     });
-    this.impressions.patchValue({
-      from: filters.impressions.from || null,
+    this.filterForm.controls.impressions.patchValue({
+      from: filters.impressions.from,
       to: filters.impressions.to
     });
-    this.dates.patchValue({
-      start: filters.dates.start || this.startDate,
-      end: filters.dates.end || this.endDate
+    this.filterForm.controls.dates.patchValue({
+      start: filters.dates.start,
+      end: filters.dates.end
     });
-    this.filterForm.controls['keywordTyp'].setValue(filters.keywordTyp);
+    this.filterForm.controls.queryTyp.setValue(filters.queryTyp);
   }
 
   trimValues(obj: any) {
@@ -105,7 +92,6 @@ export class FiltersComponent implements OnInit {
       if (key !== 'keywordTyp' && key !== 'dates') {
         // eslint-disable-next-line guard-for-in
         for (const val in obj[key]) {
-          console.log('obj[key][val]: ' + obj[key][val]);
           if (obj[key][val] !== null && obj[key][val] !== '') {
             if (isNaN(parseInt(obj[key][val], 10))) {
               this.hasError = true;
@@ -121,16 +107,14 @@ export class FiltersComponent implements OnInit {
         }
       }
     }
-    console.log('obj: ' + JSON.stringify(obj));
     return obj;
   }
 
   getFiltered(form: any) {
-    console.log(form);
     this.store.dispatch(showLoading());
-    this.keywordService.setFilters = form;
-    const params = new HttpParams();
-    this.keywordService.fetchAll(params, this.hasFilters, form);
+    this.sharedService.setFilters = form;
+    const params = new HttpParams().set('type', this.data);
+    this.sharedService.fetchAll(params, this.hasFilters, form);
     this.dialog.closeAll();
   }
 

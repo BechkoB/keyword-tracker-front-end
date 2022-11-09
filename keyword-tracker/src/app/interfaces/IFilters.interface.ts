@@ -1,20 +1,20 @@
 export interface IFilters {
   suchvolumen: {
-    from: number | null;
-    to: number | null;
+    from: number;
+    to: number;
   };
   position: {
-    from: number | null;
-    to: number | null;
+    from: number;
+    to: number;
   };
   impressions: {
-    from: number | null;
-    to: number | null;
+    from: number;
+    to: number;
   };
   dates: {
-    start: string | null;
-    end: string | null;
+    start: string;
+    end: string;
   };
-  keywordTyp: string;
-  keyword: string;
+  queryTyp: string;
+  query: string;
 }

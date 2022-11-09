@@ -1,10 +1,10 @@
 import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateFilterFn } from '@angular/material/datepicker';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as moment from 'moment';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
-import { KeywordService } from 'src/app/services/keyword.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 interface IDialogData {
   startDate: string;
@@ -74,11 +74,11 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IDialogData,
-    private keywordService: KeywordService
+    private sharedSerivce: SharedService
   ) {}
 
   ngOnInit(): void {
-    this.keywordService.getFilters.subscribe(
+    this.sharedSerivce.getFilters.subscribe(
       (value: IFilters) => (this.filters = value)
     );
     if (this.filters.dates.start === this.start) {
@@ -88,7 +88,6 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
         (item) => item.dates?.start === this.filters.dates.start
       );
     }
-    console.log(this.filters);
   }
 
   ngAfterViewInit(): void {

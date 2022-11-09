@@ -6,19 +6,21 @@ import {
   OnDestroy
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { KeywordService } from 'src/app/services/keyword.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AddKeywordComponent } from '../../pages/add-keyword/add-keyword.component';
+import { AddQueryComponent } from '../../pages/add-query/add-query.component';
 import { FiltersComponent } from '../../pages/filters/filters.component';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { Store } from '@ngrx/store';
-import { showLoading } from 'src/app/store/actions';
+import { hideLoading, showLoading } from 'src/app/store/actions';
 import * as moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
+import { IPage } from 'src/app/interfaces/IPages.interfaces';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-main',
@@ -30,14 +32,14 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   private _destroy$: Subject<any>;
   hasFilters = false;
   displayedColumns: string[] = [
-    'key',
+    'name',
     'position',
     'impressions',
     'clicks',
     'ctr'
   ];
   length = 0;
-  dataSource: MatTableDataSource<any>;
+  dataSource: any;
   totalImpressions: string;
   totalClicks: string;
   avgCtr: number;
@@ -59,26 +61,26 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private keywordService: KeywordService,
+    private sharedService: SharedService,
     private dialog: MatDialog,
     private router: Router,
+    private httpService: HttpService,
     private route: ActivatedRoute,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this._destroy$ = new Subject<any>();
     this.type = this.route.snapshot.data['type'];
     this.params = this.params.set('type', this.type);
-    console.log(this.route.snapshot.data['type'], 'route data');
-    this._destroy$ = new Subject<any>();
-    this.keywordService.hasFilters
+    this.sharedService.hasFilters
       .pipe(takeUntil(this._destroy$))
       .subscribe((value) => (this.hasFilters = value));
-    this.keywordService.getFilters.subscribe(
-      (value: IFilters) => (this.filters = value)
-    );
-    this.getData();
-    this.dataSource.paginator = this.paginator;
+    this.sharedService.getFilters.subscribe((value: IFilters) => {
+      this.filters = value;
+      this.getData();
+    });
+    // this.getData();
   }
 
   ngAfterViewInit(): void {
@@ -86,21 +88,60 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
       this.store.dispatch(showLoading());
       this.params = this.params.set('order', this.sort.active);
       this.params = this.params.set('direction', this.sort.direction);
-      this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
+      this.getData();
     });
-  }
-
-  async getData() {
-    this.store.dispatch(showLoading());
-    this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
     this.setTable();
   }
 
+  getData() {
+    this.store.dispatch(showLoading());
+    this.httpService
+      .post(`${this.type}/all/?` + this.params, {
+        hasFilter: this.hasFilters,
+        filters: this.filters
+      })
+      .subscribe({
+        next: (res) => {
+          this.length = res.length;
+          if (this.type === 'pages' && res.data) {
+            res.data = this.calculate(res.data);
+            this.dataSource = new MatTableDataSource(res.data);
+            this.store.dispatch(hideLoading());
+            return;
+          }
+          this.dataSource = new MatTableDataSource(res.data);
+          this.dataSource.sort = this.sort;
+          if (res.result) {
+            this.totalImpressions = res.result.totalImpressions;
+            this.totalClicks = res.result.totalClicks;
+            this.avgPosition = res.result.avgPosition;
+            this.avgCtr = res.result.avgCtr;
+          }
+          this.store.dispatch(hideLoading());
+        },
+        error: (error) => {
+          console.log(error);
+          this.store.dispatch(hideLoading());
+          this.router.navigate(['/']);
+        }
+      });
+    // this.setTable();
+  }
+
   setTable() {
-    this.keywordService.keywords
+    this.sharedService.data
       .pipe(takeUntil(this._destroy$))
       .subscribe((res: any) => {
+        if (res.data === undefined) {
+          return;
+        }
         this.length = res.length;
+        if (this.type === 'pages' && res.data) {
+          res.data = this.calculate(res.data);
+          this.dataSource = new MatTableDataSource(res.data);
+          this.store.dispatch(hideLoading());
+          return;
+        }
         this.dataSource = new MatTableDataSource(res.data);
         this.dataSource.sort = this.sort;
         if (res.result) {
@@ -109,6 +150,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
           this.avgPosition = res.result.avgPosition;
           this.avgCtr = res.result.avgCtr;
         }
+        this.store.dispatch(hideLoading());
       });
   }
 
@@ -116,10 +158,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(showLoading());
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-    this.filters.keyword = filterValue;
+    this.filters.query = filterValue;
     this.hasFilters = true;
-    this.keywordService.fetchAll(this.params, true, this.filters);
-
+    this.getData();
     if (this.dataSource.paginator) {
       this.paginator.pageIndex = 0;
       this.dataSource.paginator.firstPage();
@@ -131,32 +172,43 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
     this.pageSize = event.pageSize;
     this.params = this.params.set('skip', skip).set('take', this.pageSize);
-    this.keywordService.fetchAll(this.params, this.hasFilters, this.filters);
+    this.getData();
+    // this.sharedService.fetchAll(this.params, this.hasFilters, this.filters);
+    // this.setTable();
   }
 
-  addKeyword(): void {
-    this.dialog.open(AddKeywordComponent, {
+  addQuery(): void {
+    this.dialog.open(AddQueryComponent, {
       width: '800px',
       height: '500px'
     });
   }
 
   filterKeywords() {
-    this.dialog.open(FiltersComponent, {
+    const dialogRef = this.dialog.open(FiltersComponent, {
       width: '600px',
-      height: '500px'
+      height: '500px',
+      data: this.type
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        result.query = '';
+        this.hasFilters = true;
+        this.sharedService.filtersSubject.next(result);
+        this.getData();
+      }
     });
   }
 
   resetFilters(input: HTMLInputElement) {
-    this.hasFilters = false;
-    this.keywordService.setFilters = {
-      suchvolumen: { from: null, to: null },
-      position: { from: null, to: null },
-      impressions: { from: null, to: null },
+    this.sharedService.hasFilterSubject.next(false);
+    this.sharedService.setFilters = {
+      suchvolumen: { from: 0, to: 0 },
+      position: { from: 0, to: 0 },
+      impressions: { from: 0, to: 0 },
       dates: { start: this.startDate, end: this.endDate },
-      keywordTyp: '',
-      keyword: ''
+      queryTyp: '',
+      query: ''
     };
     input.value = '';
     this.params = this.params.set('skip', 0);
@@ -166,17 +218,38 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   details(row: any) {
-    console.log(row.name);
-    this.router.navigateByUrl(`${this.type}/details/${row.id}/'${row.name}'`);
-  }
-
-  urlDetails(row: any) {
-    console.log(row);
+    this.router.navigateByUrl(`${this.type}/details/${row.id}`);
   }
 
   ngOnDestroy(): void {
     this._destroy$.next(null);
     this._destroy$.complete();
     this._destroy$.unsubscribe();
+  }
+
+  calculate(data: IPage[]) {
+    if (data[0].pages) {
+      data.forEach((page) => {
+        let totalClicks = 0;
+        let totalImpressions = 0;
+        let avgPosition = 0;
+        let avgCtr = 0;
+        page.pages.forEach((x) => {
+          totalClicks += x.clicks;
+          totalImpressions += x.impressions;
+          let sumPosition = 0;
+          let sumCtr = 0;
+          sumPosition += x.position;
+          sumCtr += x.ctr;
+          avgPosition = sumPosition / page.pages.length;
+          avgCtr = sumCtr / page.pages.length;
+        });
+        page.totalClicks = totalClicks;
+        page.totalImpressions = totalImpressions;
+        page.avgPosition = avgPosition;
+        page.avgCtr = avgCtr;
+      });
+    }
+    return data;
   }
 }

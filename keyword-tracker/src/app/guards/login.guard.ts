@@ -15,7 +15,6 @@ export class LoginGuard implements CanActivate {
     this.userService.hasUserLoggedIn.pipe(take(1)).subscribe((isLoggedIn) => {
       this.hasUser = isLoggedIn;
     });
-    console.log(this.hasUser, 'hasuser from canActivate');
     if (this.hasUser) {
       this.router.navigateByUrl('/');
       return false;

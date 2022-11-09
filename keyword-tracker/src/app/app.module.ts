@@ -44,18 +44,18 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { StoreModule } from '@ngrx/store';
 import { appReducer } from './store/reducers';
-import { AddKeywordComponent } from './core/pages/add-keyword/add-keyword.component';
+import { AddQueryComponent } from './core/pages/add-query/add-query.component';
 import { FiltersComponent } from './core/pages/filters/filters.component';
 import { DatePickerComponent } from './core/pages/date-picker/date-picker.component';
 
 import { environment } from '../environments/environment';
 import { DateAdapterComponent } from './shared/date-adapter/date-adapter.component';
-import { KeywordDetailsComponent } from './core/components/keyword-details/keyword-details.component';
+import { QueryDetailsComponent } from './core/components/query-details/query-details.component';
 
 import { TransformString } from './pipes/transform-string.pipe';
 import { DateComponent } from './core/components/date/date.component';
 import { EditComponent } from './core/pages/edit/edit.component';
-import { UrlDetailsComponent } from './core/components/url-details/url-details.component';
+import { PageDetailsComponent } from './core/components/page-details/page-details.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -63,14 +63,14 @@ import { UrlDetailsComponent } from './core/components/url-details/url-details.c
     MainComponent,
     NavComponent,
     LoadingSpinnerComponent,
-    AddKeywordComponent,
+    AddQueryComponent,
     FiltersComponent,
     DatePickerComponent,
-    KeywordDetailsComponent,
+    QueryDetailsComponent,
     TransformString,
     DateComponent,
     EditComponent,
-    UrlDetailsComponent
+    PageDetailsComponent
   ],
   imports: [
     MatButtonModule,

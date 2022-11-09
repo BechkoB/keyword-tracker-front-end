@@ -1,37 +1,37 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainComponent } from './core/components/main/main.component';
-import { KeywordDetailsComponent } from './core/components/keyword-details/keyword-details.component';
+import { QueryDetailsComponent } from './core/components/query-details/query-details.component';
 import { LoginComponent } from './core/pages/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginGuard } from './guards/login.guard';
-import { UrlDetailsComponent } from './core/components/url-details/url-details.component';
+import { PageDetailsComponent } from './core/components/page-details/page-details.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'keywords', pathMatch: 'full' },
+  { path: '', redirectTo: 'queries', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   {
-    path: 'keywords',
+    path: 'queries',
     component: MainComponent,
-    data: { type: 'keywords' },
+    data: { type: 'queries' },
     canActivate: [AuthGuard]
   },
   {
-    path: 'urls',
+    path: 'pages',
     component: MainComponent,
-    data: { type: `urls` },
+    data: { type: 'pages' },
     canActivate: [AuthGuard]
   },
   {
-    path: 'keywords/details/:id/:name',
-    data: { type: 'keywords' },
-    component: KeywordDetailsComponent,
+    path: 'queries/details/:id',
+    data: { type: 'queries' },
+    component: QueryDetailsComponent,
     canActivate: [AuthGuard]
   },
   {
-    path: 'urls/details/:id/:name',
-    data: { type: 'urls' },
-    component: UrlDetailsComponent,
+    path: 'pages/details/:id',
+    data: { type: 'pages' },
+    component: PageDetailsComponent,
     canActivate: [AuthGuard]
   }
 ];

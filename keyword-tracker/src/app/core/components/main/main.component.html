@@ -1,7 +1,7 @@
 <app-date></app-date>
 <ng-container>
   <h1 class="text-3xl font-bold ml-4 mt-8">
-    {{ type === 'keywords' ? 'Keywords' : "URL's" }} Übersicht
+    {{ type === 'queries' ? 'Queries' : 'Pages' }} Übersicht
   </h1>
   <div class="flex justify-between">
     <div>
@@ -10,7 +10,7 @@
         (keyup.enter)="applyFilter($event)"
         #input
         placeholder="{{
-          type === 'keywords' ? 'Keywords  suchen' : 'Urls suchen'
+          type === 'queries' ? 'Queries  suchen' : 'Pages suchen'
         }}"
       />
     </div>
@@ -28,21 +28,21 @@
           {{ totalClicks }}
         </section>
       </div> -->
-          <button
-      *ngIf="hasFilters"
-      class="clear"
-      matTooltip="Clear Filters"
-      matTooltipPosition="above"
-      (click)="resetFilters(input)"
-    >
-      Clear Filters
-      <mat-icon
-        class="relative top-0.5 w-1 h-1"
-        aria-hidden="false"
-        aria-label="Example home icon"
-        fontIcon="close"
-      ></mat-icon>
-    </button>
+      <button
+        *ngIf="hasFilters"
+        class="clear"
+        matTooltip="Clear Filters"
+        matTooltipPosition="above"
+        (click)="resetFilters(input)"
+      >
+        Clear Filters
+        <mat-icon
+          class="relative top-0.5 w-1 h-1"
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="close"
+        ></mat-icon>
+      </button>
       <button
         class="btn my-4 mx-4"
         matTooltip="Filters"
@@ -51,12 +51,12 @@
         Filter
       </button>
       <button
-        *ngIf="type === 'keywords'"
+        *ngIf="type === 'queries'"
         class="btn w-60 mr-6 mt-4"
-        matTooltip="Add keyword"
-        (click)="addKeyword()"
+        matTooltip="Add Query"
+        (click)="addQuery()"
       >
-        {{ type }} hinzufügen
+        Query hinzufügen
       </button>
     </div>
   </div>
@@ -67,53 +67,65 @@
     matSort
     matSortActive="created"
   >
-    <ng-container matColumnDef="key">
-      <th mat-header-cell *matHeaderCellDef>
-        {{ type === 'keywords' ? type : 'URL' }}
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ type === 'queries' ? 'Queries' : 'Pages' }}
       </th>
       <td mat-cell *matCellDef="let row" (click)="details(row)">
         {{ row?.name | transformString }}
       </td>
     </ng-container>
 
-    <!-- <ng-container matColumnDef="key" *ngIf="type !== 'Keywords'">
-      <th mat-header-cell *matHeaderCellDef>URL</th>
-      <td mat-cell *matCellDef="let row" (click)="urlDetails(row)">{{ row?.name | transformString }}</td>
-    </ng-container> -->
+    <ng-container *ngIf="type === 'queries'">
+      <ng-container matColumnDef="clicks">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Clicks</th>
+        <td mat-cell *matCellDef="let row">{{ row.queries[0]?.clicks }}</td>
+      </ng-container>
 
-    <!-- <ng-container matColumnDef="suchvolumen">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Suchvolumen</th>
-      <td mat-cell *matCellDef="let row">{{ row?.suchvolumen }}</td>
-    </ng-container> -->
+      <ng-container matColumnDef="position">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.queries[0]?.position.toFixed(2) }}
+        </td>
+      </ng-container>
 
-    <!-- <ng-container matColumnDef="url">
-      <th mat-header-cell *matHeaderCellDef>URL</th>
-      <td mat-cell *matCellDef="let row">{{ row?.urls[0].name | transformString }}</td>
-    </ng-container> -->
+      <ng-container matColumnDef="impressions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Impressions</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.queries[0]?.impressions }}
+        </td>
+      </ng-container>
 
-    <!-- <ng-container matColumnDef="typ">
-      <th mat-header-cell *matHeaderCellDef>Typ</th>
-      <td mat-cell *matCellDef="let row">{{ row?.typ }}</td>
-    </ng-container> -->
-
-    <ng-container matColumnDef="clicks">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Clicks</th>
-      <td mat-cell *matCellDef="let row">{{ row?.clicks }}</td>
+      <ng-container matColumnDef="ctr">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.queries[0]?.ctr.toFixed(2) }}
+        </td>
+      </ng-container>
     </ng-container>
 
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
-      <td mat-cell *matCellDef="let row">{{ row?.position?.toFixed(2) }}</td>
-    </ng-container>
+    <ng-container *ngIf="type === 'pages'">
+      <ng-container matColumnDef="clicks">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Clicks</th>
+        <td mat-cell *matCellDef="let row">{{ row?.totalClicks }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="impressions">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Impressions</th>
-      <td mat-cell *matCellDef="let row">{{ row?.impressions }}</td>
-    </ng-container>
+      <ng-container matColumnDef="position">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row?.avgPosition.toFixed(2) }}
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="ctr">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
-      <td mat-cell *matCellDef="let row">{{ row?.ctr?.toFixed(2) }}</td>
+      <ng-container matColumnDef="impressions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Impressions</th>
+        <td mat-cell *matCellDef="let row">{{ row?.totalImpressions }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ctr">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
+        <td mat-cell *matCellDef="let row">{{ row?.avgCtr.toFixed(2) }}</td>
+      </ng-container>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

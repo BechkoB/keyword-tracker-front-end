@@ -2,11 +2,10 @@ import { HttpParams } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
-import { Store } from '@ngrx/store';
+import { Router, Routes } from '@angular/router';
 import * as moment from 'moment';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
-import { KeywordService } from 'src/app/services/keyword.service';
-import { showLoading } from 'src/app/store/actions';
+import { SharedService } from 'src/app/services/shared.service';
 import { DatePickerComponent } from '../../pages/date-picker/date-picker.component';
 
 @Component({
@@ -18,17 +17,19 @@ export class DateComponent implements OnInit {
   filters: IFilters;
   hasFilters = false;
   params = new HttpParams();
+  type: string;
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('paginator') paginator: MatPaginator;
   constructor(
     private dialog: MatDialog,
-    private store: Store<{ showLoading: boolean }>,
-    private keywordService: KeywordService
+    private sharedService: SharedService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.keywordService.getFilters.subscribe(
+    this.type = this.router.url.replace('/', '');
+    this.sharedService.getFilters.subscribe(
       (value: IFilters) => (this.filters = value)
     );
   }
@@ -37,7 +38,8 @@ export class DateComponent implements OnInit {
     const dialogRef = this.dialog.open(DatePickerComponent, {
       width: '450px',
       height: '540px',
-      panelClass: 'date-modal'
+      panelClass: 'date-modal',
+      data: this.type
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -45,13 +47,8 @@ export class DateComponent implements OnInit {
         this.hasFilters = true;
         this.filters.dates.start = moment(result.start).format('YYYY-MM-DD');
         this.filters.dates.end = moment(result.end).format('YYYY-MM-DD');
-        this.keywordService.setFilters = this.filters;
-        this.store.dispatch(showLoading());
-        this.params = this.params.set('skip', 0);
-        this.keywordService.fetchAll(this.params, true, this.filters);
-        console.log(this.paginator);
-        // this.paginator.pageIndex = 0;
-        // this.paginator?.firstPage();
+        this.sharedService.setFilters = this.filters;
+        this.sharedService.hasFilterSubject.next(true);
       }
     });
   }

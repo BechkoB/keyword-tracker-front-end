@@ -1,9 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { take } from 'rxjs';
-import { KeywordService } from 'src/app/services/keyword.service';
-import { UrlService } from 'src/app/services/url.service';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
+import { IPage } from 'src/app/interfaces/IPages.interfaces';
+import { IQuery } from 'src/app/interfaces/IQueries.interfaces';
+import { QueryService } from 'src/app/services/query.service';
+import { SharedService } from 'src/app/services/shared.service';
+import { PageService } from 'src/app/services/page.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -12,9 +16,17 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./edit.component.scss']
 })
 export class EditComponent implements OnInit {
+  filters: IFilters;
   type: string;
-  form = new FormGroup({
+  pageForm = new FormGroup({
     name: new FormControl(),
+    suchvolumen: new FormControl(),
+    typ: new FormControl(),
+    tracken: new FormControl()
+  });
+
+  queryForm = new FormGroup({
+    designated: new FormControl(),
     suchvolumen: new FormControl(),
     typ: new FormControl(),
     tracken: new FormControl()
@@ -22,59 +34,64 @@ export class EditComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private keywordService: KeywordService,
-    private urlService: UrlService
+    private queryService: QueryService,
+    private sharedService: SharedService
   ) {}
 
   ngOnInit(): void {
+    this.sharedService.getFilters.subscribe(
+      (value: IFilters) => (this.filters = value)
+    );
     if (!this.data) {
       return;
     }
     this.type = this.data.from;
-    console.log(this.type);
     this.initForm();
   }
 
   initForm() {
-    console.log(this.data);
-    if (this.type === 'urls') {
-      this.form.patchValue({
-        name: this.data.url.keyword.name,
-        suchvolumen: this.data.url.suchvolumen,
-        typ: this.data.url.typ,
-        tracken: this.data.url.tracken === true ? 'Ja' : 'Nein'
+    if (this.type === 'page') {
+      this.pageForm.patchValue({
+        name: this.data.page.name,
+        suchvolumen: this.data.page.suchvolumen,
+        typ: this.data.page.typ,
+        tracken: this.data.page.tracken === true ? 'Ja' : 'Nein'
       });
-      this.form.controls.name.disable();
+      this.pageForm.controls.name.disable();
     } else {
-      this.form.patchValue({
-        name: this.data.keyword.urls[0].name.replace(environment.mainUrl, ''),
-        suchvolumen: this.data.keyword.suchvolumen,
-        typ: this.data.keyword.typ,
-        tracken: this.data.keyword.racken === true ? 'Ja' : 'Nein'
+      this.queryForm.patchValue({
+        designated: this.data.query.designated
+          ? this.data.query.designated.name
+          : null,
+        suchvolumen: this.data.query.est_search_volume,
+        typ: this.data.query.typ,
+        tracken: this.data.query.tracken === true ? 'Ja' : 'Nein'
       });
     }
   }
 
   edit(form: FormGroup) {
-    console.log(this.type, 'type');
-    console.log(form.value, 'form.value');
-    console.log(this.data, 'this.data');
     form.value.tracken =
       form.value.tracken.toLowerCase() === 'ja' ? true : false;
 
-    if (this.type === 'urls') {
-      return this.urlService
-        .editUrl(form.value, this.data.url.name)
-        .pipe(take(1))
-        .subscribe((res) => {
-          console.log(res);
-        });
+    if (this.type === 'page') {
+      return;
+      // this.urlService
+      //   .editUrl(form.value, this.data.url.name)
+      //   .pipe(take(1))
+      //   .subscribe((res) => {
+      //     console.log(res);
+      //   });
     }
-    return this.keywordService
-      .editKeyword(form.value, this.data.keyword.name)
+    form.value.designated = form.value.designated.replave(
+      environment.mainUrl,
+      ''
+    );
+    return this.queryService
+      .edit(form.value, this.data.query.id)
       .pipe(take(1))
       .subscribe((res) => {
-        console.log(res);
+        window.location.reload();
       });
   }
 }
