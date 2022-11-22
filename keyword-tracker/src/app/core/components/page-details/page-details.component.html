@@ -54,7 +54,7 @@
     <ng-container matColumnDef="ctr">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
       <td mat-cell *matCellDef="let row">
-        {{ row?.pair_data[0].ctr?.toFixed(2) }}
+        {{ row?.pair_data[0].ctr | CtrTransform}}
       </td>
     </ng-container>
 

@@ -5,6 +5,11 @@ export interface IQuery {
   name: string;
   queries: IQueryData[];
   designated: IPage;
+  relevant: boolean | null;
+  totalClicks: number;
+  totalImpressions: number;
+  avgPosition: number;
+  avgCtr: number;
 }
 
 export interface IQueryData {

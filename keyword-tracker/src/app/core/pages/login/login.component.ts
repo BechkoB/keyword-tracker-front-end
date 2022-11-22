@@ -6,6 +6,7 @@ import { hideLoading, showLoading } from 'src/app/store/actions';
 import { UserService } from 'src/app/services/user.service';
 import { take } from 'rxjs';
 import { Router } from '@angular/router';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +28,7 @@ export class LoginComponent implements OnInit {
     private userService: UserService,
     private store: Store<{ showLoading: boolean }>,
     private router: Router,
+    private alert: AlertService,
     private authService: SocialAuthService
   ) {}
 
@@ -66,11 +68,11 @@ export class LoginComponent implements OnInit {
         next: () => {
           this.store.dispatch(hideLoading());
           this.router.navigate(['/']);
+          this.alert.success('Successfully loged in!');
         },
         error: () => {
           this.store.dispatch(hideLoading());
-          this.hasError = true;
-          this.errMsg = 'Email or password incorrect';
+          this.alert.error('Email or password incorrect!');
         }
       });
   }

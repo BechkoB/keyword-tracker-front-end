@@ -9,6 +9,8 @@ import { QueryService } from 'src/app/services/query.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { PageService } from 'src/app/services/page.service';
 import { environment } from 'src/environments/environment';
+import { AlertService } from 'src/app/services/alert.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit',
@@ -20,14 +22,14 @@ export class EditComponent implements OnInit {
   type: string;
   pageForm = new FormGroup({
     name: new FormControl(),
-    suchvolumen: new FormControl(),
+    est_search_volume: new FormControl(),
     typ: new FormControl(),
     tracken: new FormControl()
   });
 
   queryForm = new FormGroup({
     designated: new FormControl(),
-    suchvolumen: new FormControl(),
+    est_search_volume: new FormControl(),
     typ: new FormControl(),
     tracken: new FormControl()
   });
@@ -35,6 +37,8 @@ export class EditComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private queryService: QueryService,
+    private router: Router,
+    private alert: AlertService,
     private sharedService: SharedService
   ) {}
 
@@ -53,7 +57,7 @@ export class EditComponent implements OnInit {
     if (this.type === 'page') {
       this.pageForm.patchValue({
         name: this.data.page.name,
-        suchvolumen: this.data.page.suchvolumen,
+        est_search_volume: this.data.est_search_volume,
         typ: this.data.page.typ,
         tracken: this.data.page.tracken === true ? 'Ja' : 'Nein'
       });
@@ -63,7 +67,7 @@ export class EditComponent implements OnInit {
         designated: this.data.query.designated
           ? this.data.query.designated.name
           : null,
-        suchvolumen: this.data.query.est_search_volume,
+        est_search_volume: this.data.query.est_search_volume,
         typ: this.data.query.typ,
         tracken: this.data.query.tracken === true ? 'Ja' : 'Nein'
       });
@@ -83,15 +87,22 @@ export class EditComponent implements OnInit {
       //     console.log(res);
       //   });
     }
-    form.value.designated = form.value.designated.replave(
+    form.value.designated = form.value.designated.replace(
       environment.mainUrl,
       ''
     );
     return this.queryService
       .edit(form.value, this.data.query.id)
       .pipe(take(1))
-      .subscribe((res) => {
-        window.location.reload();
+      .subscribe({
+        next: () => {
+          window.location.reload();
+          this.alert.success('Edited successfully');
+        },
+        error: (err) => {
+          console.error(err);
+          this.alert.error('Error while editing...Please try again later');
+        }
       });
   }
 }

@@ -16,5 +16,6 @@ export interface IFilters {
     end: string;
   };
   queryTyp: string;
+  relevant: boolean | null;
   query: string;
 }

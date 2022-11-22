@@ -11,9 +11,9 @@ import { hideLoading, showLoading } from './store/actions';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'keyword-tracker';
+  title = 'Conten Audit Tool';
   hasUser = false;
-  loading$ = false;
+  loading = false;
   loginStatus$: Observable<boolean>;
   userName: string;
 
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.store.select('showLoading').subscribe((state) => {
       Promise.resolve().then(() => {
-        this.loading$ = state;
+        this.loading = state;
       });
     });
     this.user = JSON.parse(localStorage.getItem('userData') as string);
@@ -36,6 +36,6 @@ export class AppComponent implements OnInit {
       this.loginStatus$ = this.userService.hasUserLoggedIn;
     }
     this.loginStatus$ = this.userService.hasUserLoggedIn;
-    this.store.dispatch(hideLoading());
+    // this.store.dispatch(hideLoading());
   }
 }

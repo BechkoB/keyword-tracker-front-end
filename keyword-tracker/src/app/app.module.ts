@@ -40,6 +40,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { StoreModule } from '@ngrx/store';
@@ -53,9 +54,11 @@ import { DateAdapterComponent } from './shared/date-adapter/date-adapter.compone
 import { QueryDetailsComponent } from './core/components/query-details/query-details.component';
 
 import { TransformString } from './pipes/transform-string.pipe';
+import { CtrTransform } from './pipes/ctr.pipe';
 import { DateComponent } from './core/components/date/date.component';
 import { EditComponent } from './core/pages/edit/edit.component';
 import { PageDetailsComponent } from './core/components/page-details/page-details.component';
+import { AlertComponent } from './shared/alert/alert.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -68,9 +71,11 @@ import { PageDetailsComponent } from './core/components/page-details/page-detail
     DatePickerComponent,
     QueryDetailsComponent,
     TransformString,
+    CtrTransform,
     DateComponent,
     EditComponent,
-    PageDetailsComponent
+    PageDetailsComponent,
+    AlertComponent
   ],
   imports: [
     MatButtonModule,
@@ -90,6 +95,7 @@ import { PageDetailsComponent } from './core/components/page-details/page-detail
     BrowserModule,
     AppRoutingModule,
     MatDatepickerModule,
+    MatSnackBarModule,
     MatRippleModule,
     MatListModule,
     MatTooltipModule,

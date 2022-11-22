@@ -3,11 +3,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { take } from 'rxjs';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { IPage } from 'src/app/interfaces/IPages.interfaces';
 import { IQuery } from 'src/app/interfaces/IQueries.interfaces';
+import { AlertService } from 'src/app/services/alert.service';
 import { PageService } from 'src/app/services/page.service';
+import { SharedService } from 'src/app/services/shared.service';
+import { hideLoading, showLoading } from 'src/app/store/actions';
 import { EditComponent } from '../../pages/edit/edit.component';
 
 @Component({
@@ -25,6 +30,7 @@ export class PageDetailsComponent implements OnInit, AfterViewInit {
   pageSizeOptions: [5, 10, 20, 50];
   page: IPage | undefined;
   dataSource: MatTableDataSource<IQuery>;
+  filters: IFilters;
 
   displayedColumns: string[] = [
     'url',
@@ -36,21 +42,39 @@ export class PageDetailsComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private dialog: MatDialog,
+    private alert: AlertService,
+    private router: Router,
+    private store: Store<{ showLoading: boolean }>,
+    private sharedService: SharedService,
     private pageService: PageService
   ) {
     this.pageId = this.route.snapshot.params['id'];
   }
 
   ngOnInit(): void {
+    this.store.dispatch(showLoading());
+    this.sharedService.getFilters.subscribe(
+      (value: IFilters) => (this.filters = value)
+    );
     this.pageService
-      .getById(this.pageId)
+      .getById(this.pageId, this.filters)
       .pipe(take(1))
-      .subscribe((result: { page: IPage; queries: IQuery[] }) => {
-        this.page = result.page;
-        this.length = result.queries.length;
-        this.dataSource = new MatTableDataSource(result.queries);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+      .subscribe({
+        next: (result: { page: IPage; queries: IQuery[] }) => {
+          this.page = result.page;
+          this.length = result.queries.length;
+          this.dataSource = new MatTableDataSource(result.queries);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.store.dispatch(hideLoading());
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.alert.error(
+            'Something went wrong while fetching data.. Please try again later.'
+          );
+          this.router.navigate(['/']);
+        }
       });
   }
 

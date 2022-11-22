@@ -19,6 +19,12 @@ export class FiltersComponent implements OnInit {
   hasFilters = false;
   typ = '';
   options = ['M', 'T'];
+  relevantOptions = [
+    { value: true, display: 'Yes' },
+    { value: false, display: 'No' },
+    { value: 'null', display: 'Not defined' }
+  ];
+  relevant: boolean | null;
   endDate = moment().format('YYYY-MM-DD');
   formObj: any;
   startDate = moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD');
@@ -40,7 +46,8 @@ export class FiltersComponent implements OnInit {
       start: new FormControl<string>(''),
       end: new FormControl<string>('')
     }),
-    queryTyp: new FormControl('')
+    queryTyp: new FormControl(''),
+    relevant: new FormControl<null | boolean>(null)
   });
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: string,
@@ -85,11 +92,12 @@ export class FiltersComponent implements OnInit {
       end: filters.dates.end
     });
     this.filterForm.controls.queryTyp.setValue(filters.queryTyp);
+    this.filterForm.controls.relevant.setValue(filters.relevant);
   }
 
   trimValues(obj: any) {
     for (const key in obj) {
-      if (key !== 'keywordTyp' && key !== 'dates') {
+      if (key !== 'keywordTyp' && key !== 'dates' && key !== 'relevant') {
         // eslint-disable-next-line guard-for-in
         for (const val in obj[key]) {
           if (obj[key][val] !== null && obj[key][val] !== '') {
@@ -113,12 +121,6 @@ export class FiltersComponent implements OnInit {
   getFiltered(form: any) {
     this.store.dispatch(showLoading());
     this.sharedService.setFilters = form;
-    const params = new HttpParams().set('type', this.data);
-    this.sharedService.fetchAll(params, this.hasFilters, form);
     this.dialog.closeAll();
-  }
-
-  changeTyp(value: string) {
-    this.typ = value;
   }
 }

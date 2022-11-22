@@ -19,7 +19,7 @@ describe('AppComponent', () => {
   it(`should have as title 'keyword-tracker'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('keyword-tracker');
+    expect(app.title).toEqual('Conten Audit Tool');
   });
 
   it('should render title', () => {
@@ -27,7 +27,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.content span')?.textContent).toContain(
-      'keyword-tracker app is running!'
+      'Conten Audit Tool app is running!'
     );
   });
 });

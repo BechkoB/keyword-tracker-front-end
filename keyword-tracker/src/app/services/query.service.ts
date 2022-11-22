@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IFilters } from '../interfaces/IFilters.interface';
 import { IPage } from '../interfaces/IPages.interfaces';
+import { IQuery } from '../interfaces/IQueries.interfaces';
 import { HttpService } from './http.service';
 
 @Injectable({
@@ -12,6 +13,13 @@ export class QueryService {
 
   edit(body: object, id: number): Observable<any> {
     return this.httpService.patch(`queries/edit/${id}`, body);
+  }
+
+  bulkEdit(body: IQuery[], type: boolean | null): Observable<any> {
+    return this.httpService.patch(`queries/edit/bulk`, {
+      data: body,
+      type
+    });
   }
 
   updateDesignatedPage(
@@ -33,7 +41,7 @@ export class QueryService {
     return this.httpService.post('queries/filter', body);
   }
 
-  getById(id: string, filters: IFilters): Observable<any> {
+  getById(id: number, filters: IFilters): Observable<any> {
     return this.httpService.post(`queries/${id}`, filters);
   }
 }

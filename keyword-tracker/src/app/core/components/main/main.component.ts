@@ -5,10 +5,10 @@ import {
   AfterViewInit,
   OnDestroy
 } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil, tap } from 'rxjs';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AddQueryComponent } from '../../pages/add-query/add-query.component';
@@ -21,6 +21,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
 import { IPage } from 'src/app/interfaces/IPages.interfaces';
 import { HttpService } from 'src/app/services/http.service';
+import { AlertService } from 'src/app/services/alert.service';
+import { IQuery } from 'src/app/interfaces/IQueries.interfaces';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { QueryService } from 'src/app/services/query.service';
+
+interface Checks {
+  name: string;
+  completed: boolean;
+  color: string;
+  checkboxes: { id: number; checked: boolean | null }[];
+}
 
 @Component({
   selector: 'app-main',
@@ -28,16 +40,23 @@ import { HttpService } from 'src/app/services/http.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
+  relevantSelect = new SelectionModel<IQuery>(true, []);
+  irrelevantSelect = new SelectionModel<IQuery>(true, []);
+
   type = '';
   private _destroy$: Subject<any>;
   hasFilters = false;
-  displayedColumns: string[] = [
+  queryColumns: string[] = [
+    'relevant',
+    'irrelevant',
     'name',
     'position',
     'impressions',
     'clicks',
     'ctr'
   ];
+
+  pageColumns: string[] = ['name', 'position', 'impressions', 'clicks', 'ctr'];
   length = 0;
   dataSource: any;
   totalImpressions: string;
@@ -59,6 +78,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTable) table: MatTable<any>;
 
   constructor(
     private sharedService: SharedService,
@@ -66,10 +86,12 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private httpService: HttpService,
     private route: ActivatedRoute,
+    private queryService: QueryService,
+    private alert: AlertService,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this._destroy$ = new Subject<any>();
     this.type = this.route.snapshot.data['type'];
     this.params = this.params.set('type', this.type);
@@ -80,7 +102,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
       this.filters = value;
       this.getData();
     });
-    // this.getData();
   }
 
   ngAfterViewInit(): void {
@@ -100,6 +121,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
         hasFilter: this.hasFilters,
         filters: this.filters
       })
+      .pipe(tap())
       .subscribe({
         next: (res) => {
           this.length = res.length;
@@ -109,7 +131,17 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
             this.store.dispatch(hideLoading());
             return;
           }
+          res.data = this.calculateQueryAvg(res.data);
           this.dataSource = new MatTableDataSource(res.data);
+          res.data.forEach((item: IQuery) => {
+            if (item.relevant) {
+              this.relevantSelect.toggle(item);
+            } else if (item.relevant === false) {
+              this.irrelevantSelect.toggle(item);
+            } else {
+              return;
+            }
+          });
           this.dataSource.sort = this.sort;
           if (res.result) {
             this.totalImpressions = res.result.totalImpressions;
@@ -122,6 +154,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
         error: (error) => {
           console.log(error);
           this.store.dispatch(hideLoading());
+          this.alert.error(
+            'Something went wrong while fetching data.. Please try again later.'
+          );
           this.router.navigate(['/']);
         }
       });
@@ -169,12 +204,12 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onPageChange(event: PageEvent): void {
     this.store.dispatch(showLoading());
+    this.relevantSelect.clear();
+    this.irrelevantSelect.clear();
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
     this.pageSize = event.pageSize;
     this.params = this.params.set('skip', skip).set('take', this.pageSize);
     this.getData();
-    // this.sharedService.fetchAll(this.params, this.hasFilters, this.filters);
-    // this.setTable();
   }
 
   addQuery(): void {
@@ -186,8 +221,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   filterKeywords() {
     const dialogRef = this.dialog.open(FiltersComponent, {
-      width: '600px',
-      height: '500px',
+      width: '550px',
+      height: '550px',
       data: this.type
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -195,9 +230,107 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
         result.query = '';
         this.hasFilters = true;
         this.sharedService.filtersSubject.next(result);
-        this.getData();
       }
     });
+  }
+
+  isAllRelevantSelected() {
+    const numSelected = this.relevantSelect.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  check(event: MatCheckboxChange, row: IQuery, type: string) {
+    if (type === 'relevant') {
+      if (event.checked) {
+        row.relevant = true;
+      } else {
+        row.relevant = null;
+      }
+      this.updateRelevant(row);
+      this.relevantSelect.toggle(row);
+      if (this.irrelevantSelect.isSelected(row)) {
+        this.irrelevantSelect.deselect(row);
+      }
+    } else {
+      if (event.checked) {
+        row.relevant = false;
+      } else {
+        row.relevant = null;
+      }
+      this.updateRelevant(row);
+      this.irrelevantSelect.toggle(row);
+      if (this.relevantSelect.isSelected(row)) {
+        this.relevantSelect.deselect(row);
+      }
+    }
+    this.table.renderRows();
+  }
+
+  updateRelevant(query: IQuery) {
+    return this.queryService
+      .edit(query, query.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.alert.success('Edited successfully');
+        },
+        error: (err) => {
+          console.error(err);
+          this.alert.error('Error while editing...Please try again later');
+        }
+      });
+  }
+
+  isAllIrrelevantSelected() {
+    const numSelected = this.irrelevantSelect.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  selectAllRelevant(event: MatCheckboxChange) {
+    this.irrelevantSelect.clear();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    this.isAllRelevantSelected()
+      ? this.relevantSelect.clear()
+      : this.dataSource.data.forEach((row: IQuery) => {
+          row.relevant = true;
+          this.relevantSelect.select(row);
+        });
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    event.checked
+      ? this.bulkEdit(this.dataSource.data, true)
+      : this.bulkEdit(this.dataSource.data, null);
+  }
+
+  selectAllIrelevand(event: MatCheckboxChange) {
+    this.relevantSelect.clear();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    this.isAllIrrelevantSelected()
+      ? this.irrelevantSelect.clear()
+      : this.dataSource.data.forEach((row: IQuery) => {
+          row.relevant = false;
+          this.irrelevantSelect.select(row);
+        });
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    event.checked
+      ? this.bulkEdit(this.dataSource.data, false)
+      : this.bulkEdit(this.dataSource.data, null);
+  }
+
+  bulkEdit(data: IQuery[], type: boolean | null) {
+    this.queryService
+      .bulkEdit(data, type)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.alert.success('Edited successfully');
+        },
+        error: (err) => {
+          console.error(err);
+          this.alert.error('Error while editing...Please try again later');
+        }
+      });
   }
 
   resetFilters(input: HTMLInputElement) {
@@ -207,6 +340,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
       position: { from: 0, to: 0 },
       impressions: { from: 0, to: 0 },
       dates: { start: this.startDate, end: this.endDate },
+      relevant: null,
       queryTyp: '',
       query: ''
     };
@@ -234,11 +368,11 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
         let totalImpressions = 0;
         let avgPosition = 0;
         let avgCtr = 0;
+        let sumPosition = 0;
+        let sumCtr = 0;
         page.pages.forEach((x) => {
           totalClicks += x.clicks;
           totalImpressions += x.impressions;
-          let sumPosition = 0;
-          let sumCtr = 0;
           sumPosition += x.position;
           sumCtr += x.ctr;
           avgPosition = sumPosition / page.pages.length;
@@ -250,6 +384,30 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
         page.avgCtr = avgCtr;
       });
     }
+    return data;
+  }
+
+  calculateQueryAvg(data: IQuery[]) {
+    data.forEach((query) => {
+      let totalClicks = 0;
+      let totalImpressions = 0;
+      let avgPosition = 0;
+      let avgCtr = 0;
+      let sumPosition = 0;
+      let sumCtr = 0;
+      query.queries.forEach((x) => {
+        totalClicks += x.clicks;
+        totalImpressions += x.impressions;
+        sumPosition += x.position;
+        sumCtr += x.ctr;
+        avgPosition = sumPosition / query.queries.length;
+        avgCtr = sumCtr / query.queries.length;
+      });
+      query.totalClicks = totalClicks;
+      query.totalImpressions = totalImpressions;
+      query.avgPosition = avgPosition;
+      query.avgCtr = avgCtr;
+    });
     return data;
   }
 }

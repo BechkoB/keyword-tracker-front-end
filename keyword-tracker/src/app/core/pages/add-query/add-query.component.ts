@@ -2,8 +2,10 @@ import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { take } from 'rxjs';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
+import { AlertService } from 'src/app/services/alert.service';
 import { QueryService } from 'src/app/services/query.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -14,7 +16,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class AddQueryComponent implements OnInit {
   form = new FormGroup({
-    query: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [Validators.required]),
     page: new FormControl(null),
     esv: new FormControl(null),
     typ: new FormControl(null)
@@ -24,7 +26,8 @@ export class AddQueryComponent implements OnInit {
   constructor(
     private queryService: QueryService,
     private sharedService: SharedService,
-
+    private router: Router,
+    private alert: AlertService,
     private dialog: MatDialog
   ) {}
 
@@ -39,13 +42,19 @@ export class AddQueryComponent implements OnInit {
     this.queryService
       .save(form.value)
       .pipe(take(1))
-      .subscribe(() => {
-        const params = new HttpParams()
-          .set('skip', 0)
-          .set('take', 10)
-          .set('type', 'queries');
-        this.sharedService.fetchAll(params, false, this.filters);
-        console.log('Keyword added successfully');
+      .subscribe({
+        next: () => {
+          const params = new HttpParams()
+            .set('skip', 0)
+            .set('take', 10)
+            .set('type', 'queries');
+          this.sharedService.fetchAll(params, false, this.filters);
+          this.alert.success('Query added successfully');
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.alert.error(`Error while adding query: ${err.message}`);
+        }
       });
   }
 }

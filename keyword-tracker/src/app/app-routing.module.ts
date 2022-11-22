@@ -9,6 +9,7 @@ import { PageDetailsComponent } from './core/components/page-details/page-detail
 
 const routes: Routes = [
   { path: '', redirectTo: 'queries', pathMatch: 'full' },
+
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   {
     path: 'queries',

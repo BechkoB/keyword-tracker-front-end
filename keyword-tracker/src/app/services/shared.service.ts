@@ -21,7 +21,7 @@ export class SharedService {
   ) {}
 
   endDate = moment().format('YYYY-MM-DD');
-  startDate = moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD');
+  startDate = moment(this.endDate).subtract(3, 'months').format('YYYY-MM-DD');
 
   filters: IFilters = {
     suchvolumen: { from: 0, to: 0 },
@@ -29,6 +29,7 @@ export class SharedService {
     impressions: { from: 0, to: 0 },
     dates: { start: this.startDate, end: this.endDate },
     queryTyp: '',
+    relevant: null,
     query: ''
   };
 

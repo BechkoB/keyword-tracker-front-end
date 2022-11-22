@@ -1,7 +1,6 @@
 import { HttpParams } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
 import { Router, Routes } from '@angular/router';
 import * as moment from 'moment';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
@@ -19,8 +18,6 @@ export class DateComponent implements OnInit {
   params = new HttpParams();
   type: string;
 
-  // @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild('paginator') paginator: MatPaginator;
   constructor(
     private dialog: MatDialog,
     private sharedService: SharedService,

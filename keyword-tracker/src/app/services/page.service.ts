@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { IFilters } from '../interfaces/IFilters.interface';
 import { HttpService } from './http.service';
 
 @Injectable({
@@ -8,8 +9,8 @@ import { HttpService } from './http.service';
 export class PageService {
   constructor(private httpService: HttpService) {}
 
-  getById(id: string): Observable<any> {
-    return this.httpService.get(`pages/${id}`);
+  getById(id: string, filters: IFilters): Observable<any> {
+    return this.httpService.post(`pages/${id}`, filters);
   }
 
   edit(body: object, name: string): Observable<any> {

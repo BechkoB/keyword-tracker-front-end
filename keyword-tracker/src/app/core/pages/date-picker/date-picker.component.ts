@@ -33,7 +33,7 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
       title: '7days',
       dates: {
         end: this.endDate,
-        start: moment(this.endDate).subtract(7, 'days').format('YYYY-MM-DD')
+        start: moment(this.endDate).subtract(6, 'days').format('YYYY-MM-DD')
       },
       description: 'Last 7 days'
     },
@@ -111,7 +111,6 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
     const day = d?.getDay();
 
     /* Return only Monday and Sunday */
-
     return day !== 2 && day !== 3 && day !== 4 && day !== 5 && day !== 6;
   };
 
