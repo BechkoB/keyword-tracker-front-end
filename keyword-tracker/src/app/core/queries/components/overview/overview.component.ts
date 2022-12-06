@@ -83,6 +83,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       this.store.dispatch(showLoading());
       this.params = this.params.set('order', this.sort.active);
       this.params = this.params.set('direction', this.sort.direction);
+      this.setTable();
     });
   }
 
