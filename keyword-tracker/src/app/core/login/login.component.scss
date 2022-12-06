@@ -1,0 +1,64 @@
+.login-div {
+  width: 27rem;
+  height: 45rem;
+  padding: 2rem;
+  border-radius: 40px;
+  background-color: #ecf0f3;
+  box-shadow: 13px 13px 20px #cbded1,
+    -13px -13px 20px #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.header {
+  @apply mt-5 text-center;
+  color: #333;
+  font-size: 36px;
+}
+
+.main {
+  width: 100%;
+  padding: 55px 5px 5px 5px;
+}
+
+input {
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 18px;
+  color: #555;
+  padding: 20px 10px 20px 5px;
+  margin-left: 2rem;
+}
+
+.email,
+.password {
+  margin-bottom: 30px;
+  border-radius: 25px;
+  box-shadow: inset 8px 8px 8px #cbced1,
+    inset -8px -8px 8px #fff;
+}
+
+.logo {
+  width: 200px;
+  margin-left: 4rem;
+}
+
+.login-btn {
+  background-color: #fa5c5ccc;
+  box-shadow: 3px 3px 8px #b1b1b1, -3px -3px 8px #fff;
+}
+
+.login-btn:hover {
+  background-color: #ff3535cc;
+}
+
+.notification {
+  p {
+    margin-bottom: 0;
+    margin-left: 1rem;
+    color: red
+  }
+}

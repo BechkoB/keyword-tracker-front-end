@@ -10,9 +10,9 @@ import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './core/pages/login/login.component';
-import { MainComponent } from './core/components/main/main.component';
-import { NavComponent } from './core/components/nav/nav.component';
+import { LoginComponent } from './core/login/login.component';
+import { MainComponent } from './core/main/main.component';
+import { NavComponent } from './core/nav/nav.component';
 
 import {
   DateAdapter,
@@ -41,24 +41,34 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatMenuModule } from '@angular/material/menu';
 
-import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+import { LoadingSpinnerComponent } from './shared/helpers/loading-spinner/loading-spinner.component';
 import { StoreModule } from '@ngrx/store';
 import { appReducer } from './store/reducers';
-import { AddQueryComponent } from './core/pages/add-query/add-query.component';
-import { FiltersComponent } from './core/pages/filters/filters.component';
-import { DatePickerComponent } from './core/pages/date-picker/date-picker.component';
+import { AddQueryComponent } from './shared/components/add-query/add-query.component';
+import { FiltersComponent } from './shared/components/filters/filters.component';
+import { DatePickerComponent } from './shared/components/date-picker/date-picker.component';
 
 import { environment } from '../environments/environment';
-import { DateAdapterComponent } from './shared/date-adapter/date-adapter.component';
-import { QueryDetailsComponent } from './core/components/query-details/query-details.component';
+import { DateAdapterComponent } from './shared/helpers/date-adapter/date-adapter.component';
+import { QueryDetailsComponent } from './core/queries/components/query-details/query-details.component';
 
 import { TransformString } from './pipes/transform-string.pipe';
 import { CtrTransform } from './pipes/ctr.pipe';
-import { DateComponent } from './core/components/date/date.component';
-import { EditComponent } from './core/pages/edit/edit.component';
-import { PageDetailsComponent } from './core/components/page-details/page-details.component';
-import { AlertComponent } from './shared/alert/alert.component';
+import { DateComponent } from './core/date/date.component';
+import { EditComponent } from './shared/components/edit/edit.component';
+import { PageDetailsComponent } from './core/pages/components/page-details/page-details.component';
+import { AlertComponent } from './shared/helpers/alert/alert.component';
+import { SidebarComponent } from './core/sidebar/sidebar.component';
+import { QueriesComponent } from './core/queries/queries.component';
+import { PagesComponent } from './core/pages/pages.component';
+import { NewQueriesComponent } from './core/queries/components/new-queries/new-queries.component';
+import { DesignatedPageComponent } from './core/queries/components/designated-page/designated-page.component';
+import { OverviewComponent as QueryOverviewComponent } from './core/queries/components/overview/overview.component';
+import { OverviewComponent as PageOverviewComponent } from './core/pages/components/overview/overview.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -75,7 +85,14 @@ import { AlertComponent } from './shared/alert/alert.component';
     DateComponent,
     EditComponent,
     PageDetailsComponent,
-    AlertComponent
+    AlertComponent,
+    SidebarComponent,
+    QueriesComponent,
+    PagesComponent,
+    NewQueriesComponent,
+    DesignatedPageComponent,
+    QueryOverviewComponent,
+    PageOverviewComponent
   ],
   imports: [
     MatButtonModule,
@@ -91,9 +108,11 @@ import { AlertComponent } from './shared/alert/alert.component';
     MatRadioModule,
     HttpClientModule,
     SocialLoginModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     BrowserModule,
     AppRoutingModule,
+    MatExpansionModule,
     MatDatepickerModule,
     MatSnackBarModule,
     MatRippleModule,
@@ -115,7 +134,7 @@ import { AlertComponent } from './shared/alert/alert.component';
     {
       provide: 'SocialAuthServiceConfig',
       useValue: {
-        autoLogin: true,
+        autoLogin: false,
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,

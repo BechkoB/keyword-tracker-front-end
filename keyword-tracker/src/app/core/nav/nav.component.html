@@ -1,0 +1,14 @@
+<div class="navbar">
+  <button class="mt-1 mr-6" mat-list-item (click)="onLogout()" matTooltip="Logout">
+  <mat-icon>logout</mat-icon>
+  </button>
+  <div class="h-8 w-8" matTooltip="{{user.email}}">
+      <img src="{{user.imgUrl}}" alt="" *ngIf="user.imgUrl">
+    <mat-icon *ngIf="!user.imgUrl" class="mt-1">manage_accounts</mat-icon>
+  </div>
+  <!-- <button mat-button [matMenuTriggerFor]="menu">
+  </button> -->
+  <!-- <mat-menu #menu="matMenu" class="p-6">
+  </mat-menu> -->
+
+</div>

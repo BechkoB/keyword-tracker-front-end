@@ -1,5 +1,5 @@
 export interface IFilters {
-  suchvolumen: {
+  esv: {
     from: number;
     to: number;
   };

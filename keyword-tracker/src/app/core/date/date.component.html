@@ -1,0 +1,7 @@
+<div class="btn-filters" (click)="dateChange()" matTooltip="Date Range" matTooltipPosition="above">
+  Date: {{ filters.dates.start | date: 'dd-MM-yyyy' }} -
+  {{ filters.dates.end | date: 'dd-MM-yyyy' }}
+  <mat-icon >
+    add
+  </mat-icon>
+</div>

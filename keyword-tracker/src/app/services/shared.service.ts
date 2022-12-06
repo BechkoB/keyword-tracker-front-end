@@ -24,7 +24,7 @@ export class SharedService {
   startDate = moment(this.endDate).subtract(3, 'months').format('YYYY-MM-DD');
 
   filters: IFilters = {
-    suchvolumen: { from: 0, to: 0 },
+    esv: { from: 0, to: 0 },
     position: { from: 0, to: 0 },
     impressions: { from: 0, to: 0 },
     dates: { start: this.startDate, end: this.endDate },
@@ -36,33 +36,18 @@ export class SharedService {
   public hasFilterSubject = new BehaviorSubject<boolean>(false);
   public filtersSubject = new BehaviorSubject<IFilters>(this.filters);
 
-  public dataSubject = new BehaviorSubject<IQuery[] | IPage[]>([]);
+  public pageSubject = new BehaviorSubject<IPage[]>([]);
+  public querySubject = new BehaviorSubject<IQuery[]>([]);
 
-  async fetchAll(params: HttpParams, hasFilter: boolean, filters: IFilters) {
-    const route = params.get('type') === 'queries' ? 'queries' : 'pages';
-    this.httpService
-      .post(`${route}/all/?` + params, {
-        hasFilter,
-        filters
-      })
-      .subscribe({
-        next: (response) => {
-          this.dataSubject.next(response);
-          this.store.dispatch(hideLoading());
-        },
-        error: (error) => {
-          console.log(error);
-          this.store.dispatch(hideLoading());
-          this.router.navigate(['/']);
-        }
-      });
+  get queryData(): Observable<IQuery[]> {
+    return this.querySubject.asObservable();
   }
 
-  get data(): Observable<IQuery[] | IPage[]> {
-    return this.dataSubject.asObservable();
+  get pageData(): Observable<IPage[]> {
+    return this.pageSubject.asObservable();
   }
 
-  public set setFilters(value: IFilters) {
+  set setFilters(value: IFilters) {
     this.filtersSubject.next(value);
   }
 
@@ -72,5 +57,8 @@ export class SharedService {
 
   get hasFilters(): Observable<boolean> {
     return this.hasFilterSubject.asObservable();
+  }
+  set setHasFilters(value: boolean) {
+    this.hasFilterSubject.next(value);
   }
 }

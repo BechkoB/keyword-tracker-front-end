@@ -1,0 +1,144 @@
+<h1 class="text-3xl font-bold ml-4 mt-8">New Queries</h1>
+<div class="divider"></div>
+<div class="flex justify-between">
+  <div class="flex">
+    <app-date class="mb-10 mx-2 w-80"></app-date>
+
+    <button
+      class="btn-filters mb-10 mx-2"
+      matTooltip="Filters"
+      matTooltipPosition="above"
+      (click)="queryFilters()"
+    >
+      Filters
+      <mat-icon>add</mat-icon>
+    </button>
+    <button
+      *ngIf="hasFilters || filters.query !== ''"
+      class="btn-filters mb-10 mx-2"
+      matTooltip="Clear Filters"
+      matTooltipPosition="above"
+      (click)="resetFilters()"
+    >
+      Clear Filters
+      <mat-icon
+        class="relative top-0.5 w-1 h-1"
+        aria-hidden="false"
+        aria-label="Example home icon"
+        fontIcon="close"
+      ></mat-icon>
+    </button>
+  </div>
+</div>
+<table
+  mat-table
+  #table
+  [dataSource]="dataSource"
+  matSort
+  matSortActive="created"
+>
+  <ng-container matColumnDef="item-description">
+    <th class="mat-row" mat-header-cell *matHeaderCellDef colspan="5">
+      <div class="search">
+        <mat-icon
+          [matTooltip]="'Search for Query'"
+          [matTooltipPosition]="'above'"
+          >search</mat-icon
+        >
+        <input matInput #input (keyup.enter)="searchQuery($event)" [value]="filters.query"/>
+        <ng-container *ngIf="input.value !== ''">
+          <mat-icon
+            class="mr-2"
+            matTooltip="Clear"
+            matTooltipPosition="above"
+            (click)="clearSearchField(input)"
+            >clear</mat-icon
+          >
+        </ng-container>
+      </div>
+    </th>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>
+      <button class="selectBtn" (click)="updateRelevant(true)">
+        mark as relevant
+      </button>
+      <button class="selectBtn" (click)="updateRelevant(false)">
+        mark as irrelevant
+      </button>
+    </th>
+    <td mat-cell *matCellDef="let row" (click)="details(row)">
+      {{ row?.query_name | transformString }}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="select">
+    <th mat-header-cell *matHeaderCellDef>
+      <mat-checkbox
+        matTooltip="Mark All"
+        matTooltipPosition="above"
+        (change)="$event ? selectAll($event) : null"
+        [checked]="select.hasValue() && isAllSelected()"
+        [indeterminate]="select.hasValue() && !isAllSelected()"
+      >
+      </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row">
+      <mat-checkbox
+        (click)="$event.stopPropagation()"
+        (change)="select.toggle(row)"
+        [checked]="select.isSelected(row)"
+      >
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="totalClicks">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>clicks</th>
+    <td mat-cell *matCellDef="let row">{{ row?.totalClicks }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="avgPosition">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>position</th>
+    <td mat-cell *matCellDef="let row">
+      {{ row?.avgPosition.toFixed(2) }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="totalImpressions">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>impressions</th>
+    <td mat-cell *matCellDef="let row">
+      {{ row?.totalImpressions }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="avgCtr">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>ctr</th>
+    <td mat-cell *matCellDef="let row">
+      {{ row?.avgCtr | CtrTransform }}
+    </td>
+  </ng-container>
+
+  <tr
+    mat-header-row
+    *matHeaderRowDef="['item-description']"
+    class="second-header-row"
+  >
+    >
+  </tr>
+  <tr mat-header-row *matHeaderRowDef="queryColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: queryColumns"></tr>
+
+  <!-- Row shown when there is no matching data. -->
+  <tr class="mat-row" *matNoDataRow>
+    <td class="mat-cell" colspan="4">No data matching the filters...</td>
+  </tr>
+</table>
+<mat-paginator
+  #paginator
+  [length]="length"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[10, 20, 50, 100]"
+  aria-label="Select page"
+  (page)="onPageChange($event)"
+></mat-paginator>

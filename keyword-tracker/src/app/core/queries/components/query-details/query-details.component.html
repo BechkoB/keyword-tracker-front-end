@@ -1,0 +1,110 @@
+<app-date class="float-right w-80"></app-date>
+ <button
+      *ngIf="hasFilters || filters.query !== ''"
+      class="btn-filters mb-10 mx-2"
+      matTooltip="Clear Filters"
+      matTooltipPosition="above"
+      (click)="resetFilters()"
+    >
+      Clear Filters
+      <mat-icon
+        class="relative top-0.5 w-1 h-1"
+        aria-hidden="false"
+        aria-label="Example home icon"
+        fontIcon="close"
+      ></mat-icon>
+    </button>
+<div>
+  <section class="flex ml-6">
+    <div class="flex flex-col">
+      <h1 class="font-bold text-2xl mr-6 my-2">
+        Query: {{ query ? query.name : '' }}
+      </h1>
+    </div>
+    <button class="btn-filters mt-1" (click)="edit(query)" matTooltip="Edit" matTooltipPosition="above">
+      Bearbeiten
+    </button>
+  </section>
+  <!-- justify-between -->
+  <section class="flex w-4/5 px-6 my-4">
+    <div class="font-bold">Designated Page: </div>
+    <div class="font-bold ml-4">{{ designated ? designated : 'No' }}</div>
+    <!-- <div class="font-bold">Suchvolumen</div> -->
+    <!-- <div>
+      {{ query.qu?.suchvolumen }}
+    </div> -->
+    <div class="font-bold ml-8">Relevant: </div>
+    <div class="font-bold ml-4">
+      {{ query ? query.relevant === true ? 'Yes' : 'No' : null }}
+    </div>
+  </section>
+  <div class="divider"></div>
+  <table
+    mat-table
+    #table
+    [dataSource]="dataSource"
+    matSort
+    matSortActive="created"
+  >
+    <ng-container matColumnDef="url">
+      <th mat-header-cell *matHeaderCellDef>Pages</th>
+      <td mat-cell *matCellDef="let row" (click)="details(row)">{{ row?.page_name | transformString }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.avgPosition.toFixed(2) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="impressions">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Impressions</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.totalImpressions }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="clicks">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Clicks</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.totalClicks }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ctr">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.avgCtr | CtrTransform }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="designated">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Designated</th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox
+          (click)="$event.stopPropagation()"
+          (change)="onChecked($event, row)"
+          [checked]="designatedSelect.isSelected(row.page_id)"
+        >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+    <tr mat-row *matRowDef="let row; columns: displayedColumns">
+      <ng-container *ngFor="let url of row.pages">
+        {{ url.name | transformString }}
+      </ng-container>
+    </tr>
+  </table>
+  <mat-paginator
+    #paginator
+    [length]="length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[10, 20, 50, 100]"
+    aria-label="Select page"
+    (page)="onPageChange($event)"
+  ></mat-paginator>
+</div>

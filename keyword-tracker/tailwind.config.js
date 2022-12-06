@@ -1,14 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/app/core/**/*.html',
-    './src/app/core/**/*.ts',
-    './src/app/core/**/*.scss',
+    './src/app/**/*.html',
+    './src/app/**/*.ts',
+    './src/app/**/*.scss',
     './src/styles/**/*.scss'
   ],
   theme: {
     extend: {
       colors: {
+        blue: {
+          background: '#d3e3fd'
+        },
         grey: {
           light: '#F4F4F4',
           dark: '#A2A2A2',

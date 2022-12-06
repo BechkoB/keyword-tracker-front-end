@@ -1,39 +1,75 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MainComponent } from './core/components/main/main.component';
-import { QueryDetailsComponent } from './core/components/query-details/query-details.component';
-import { LoginComponent } from './core/pages/login/login.component';
+import { MainComponent } from './core/main/main.component';
+import { QueryDetailsComponent } from './core/queries/components/query-details/query-details.component';
+import { LoginComponent } from './core/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginGuard } from './guards/login.guard';
-import { PageDetailsComponent } from './core/components/page-details/page-details.component';
+import { PageDetailsComponent } from './core/pages/components/page-details/page-details.component';
+import { QueriesComponent } from './core/queries/queries.component';
+import { PagesComponent } from './core/pages/pages.component';
+import { OverviewComponent as QueriesOverviewComponent } from './core/queries/components/overview/overview.component';
+import { OverviewComponent as PagesOverviewComponent } from './core/pages/components/overview/overview.component';
+
+import { NewQueriesComponent } from './core/queries/components/new-queries/new-queries.component';
+import { DesignatedPageComponent } from './core/queries/components/designated-page/designated-page.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'queries', pathMatch: 'full' },
+  { path: '', redirectTo: '/queries/overview', pathMatch: 'full' },
 
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   {
-    path: 'queries',
+    path: '',
     component: MainComponent,
-    data: { type: 'queries' },
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'pages',
-    component: MainComponent,
-    data: { type: 'pages' },
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'queries/details/:id',
-    data: { type: 'queries' },
-    component: QueryDetailsComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'pages/details/:id',
-    data: { type: 'pages' },
-    component: PageDetailsComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'queries',
+        data: { type: 'queries' },
+        component: QueriesComponent,
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: 'overview',
+            component: QueriesOverviewComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: 'new-queries',
+            component: NewQueriesComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: 'designated-page',
+            component: DesignatedPageComponent,
+            canActivate: [AuthGuard]
+          }
+        ]
+      },
+      {
+        path: 'pages',
+        component: PagesComponent,
+        data: { type: 'pages' },
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: 'overview',
+            component: PagesOverviewComponent,
+            canActivate: [AuthGuard]
+          }
+        ]
+      },
+      {
+        path: 'queries/details/:id',
+        component: QueryDetailsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'pages/details/:id',
+        component: PageDetailsComponent,
+        canActivate: [AuthGuard]
+      }
+    ]
   }
 ];
 

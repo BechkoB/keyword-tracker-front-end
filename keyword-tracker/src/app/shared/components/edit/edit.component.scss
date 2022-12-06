@@ -1,0 +1,12 @@
+.input {
+  width: 70%;
+  align-self: center;
+}
+
+form {
+  .editBtn {
+    @apply justify-center cursor-pointer bg-red-300 rounded text-white w-56 py-2 px-4 m-auto text-xl;
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 0px 7px 12px 4px rgba(0, 0, 0, 0);
+    box-shadow: 0px 10px 13px -7px #000000, 0px 7px 12px 4px rgba(0, 0, 0, 0);
+  }
+}

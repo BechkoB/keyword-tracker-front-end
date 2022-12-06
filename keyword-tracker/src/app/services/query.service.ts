@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IFilters } from '../interfaces/IFilters.interface';
@@ -33,15 +34,67 @@ export class QueryService {
     });
   }
 
+  bulkAssignDesignatedPage(body: any): Observable<any> {
+    return this.httpService.patch('queries/update/bulk/designated/', body);
+  }
+
+  calculateQueryAvg(data: IQuery[]) {
+    data.forEach((query) => {
+      let totalClicks = 0;
+      let totalImpressions = 0;
+      let avgPosition = 0;
+      let avgCtr = 0;
+      let sumPosition = 0;
+      let sumCtr = 0;
+      query.queries.forEach((x) => {
+        totalClicks += x.clicks;
+        totalImpressions += x.impressions;
+        sumPosition += x.position;
+        sumCtr += x.ctr;
+        avgPosition = sumPosition / query.queries.length;
+        avgCtr = sumCtr / query.queries.length;
+      });
+      query.totalClicks = totalClicks;
+      query.totalImpressions = totalImpressions;
+      query.avgPosition = avgPosition;
+      query.avgCtr = avgCtr;
+    });
+    return data;
+  }
+
   save(body: object): Observable<any> {
     return this.httpService.post('queries/add', body);
+  }
+
+  getDesignatedSuggestions(
+    params: HttpParams,
+    filters: IFilters
+  ): Observable<any> {
+    return this.httpService.post('queries/designated/suggestions?' + params, {
+      filters
+    });
   }
 
   filter(body: object): Observable<any> {
     return this.httpService.post('queries/filter', body);
   }
 
-  getById(id: number, filters: IFilters): Observable<any> {
-    return this.httpService.post(`queries/${id}`, filters);
+  fetchAllQueries(
+    params: HttpParams,
+    hasFilter: boolean,
+    filters: IFilters
+  ): Observable<any> {
+    return this.httpService.post('queries/all/?' + params, {
+      hasFilter,
+      filters
+    });
+  }
+
+  getById(id: number, filters: IFilters, params: HttpParams): Observable<any> {
+    return this.httpService.post(`queries/${id}?` + params, filters);
+  }
+
+  getNewQueries(params: HttpParams, filters: IFilters): Observable<any> {
+    return this.httpService.post(`queries/new/queries?` + params, { filters });
   }
 }

@@ -23,16 +23,16 @@ export class UserService {
       this.httpService.post('users/login', {
         email,
         password
-      }) as Observable<{ user: IUser; token: string }>
+      }) as Observable<{ user: IUser; token: string; imgUrl: string }>
     ).pipe(
       first(),
-      map((user: { user: IUser; token: string }) => {
+      map((user: { user: IUser; token: string; imgUrl: string }) => {
         return this.setUserData(user);
       })
     );
   }
 
-  setUserData(payload: { user: IUser; token: string }): IUser {
+  setUserData(payload: { user: IUser; token: string; imgUrl: string }): IUser {
     this._loginStatus.next(true);
     const expireTime = 1555200000;
     payload.user.tokenExpiresIn = new Date().getTime() + expireTime;

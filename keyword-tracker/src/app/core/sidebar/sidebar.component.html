@@ -1,0 +1,112 @@
+<mat-sidenav-container class="wraper-sidenav">
+  <mat-sidenav
+    #sidenav
+    mode="side"
+    opened
+    class="sidenav"
+    [fixedInViewport]="true"
+  >
+    <!-- <div class="divider"></div> -->
+    <mat-expansion-panel class="mat-elevation-z righ-border-radius">
+      <mat-expansion-panel-header class="disable-ripple">
+        <mat-panel-title> Queries </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="flex flex-col">
+        <a
+          mat-list-item
+          routerLink="/queries/overview"
+          routerLinkActive="active"
+          matTooltip="Queries Overview"
+          matTooltipPosition="right"
+          class="nav"
+        >
+          Overview
+        </a>
+        <a
+          mat-list-item
+          routerLink="/queries/new-queries"
+          matTooltipPosition="right"
+          matTooltip="New Queries"
+          routerLinkActive="active"
+          class="nav"
+        >
+          New Queries
+        </a>
+        <a
+          mat-list-item
+          routerLink="/queries/designated-page"
+          matTooltip="Designated Pages"
+          matTooltipPosition="right"
+          routerLinkActive="active"
+          class="nav"
+        >
+          Designated Pages
+        </a>
+      </div>
+    </mat-expansion-panel>
+    <!-- <div class="divider"></div> -->
+    <mat-expansion-panel class="mat-elevation-z righ-border-radius">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Pages </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="flex flex-col">
+        <a
+          mat-list-item
+          [routerLink]="'/pages/overview'"
+          matTooltip="Pages Overview"
+          routerLinkActive="active"
+          [disableRipple]="true"
+          class="nav"
+        >
+          Overview
+        </a>
+        <a
+          mat-list-item
+          matTooltip="Tags"
+          routerLinkActive="active"
+          [disableRipple]="true"
+          class="nav"
+        >
+          Tags
+        </a>
+        <a
+          mat-list-item
+          matTooltip=""
+          routerLinkActive="active"
+          [disableRipple]="true"
+          class="nav"
+        >
+          XYZ
+        </a>
+      </div>
+    </mat-expansion-panel>
+    <!-- <div class="divider"></div> -->
+
+    <mat-expansion-panel class="mat-elevation-z righ-border-radius">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Content Cluster </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="flex flex-col">
+        <a
+          mat-list-item
+          matTooltip="Queries"
+          routerLinkActive="active"
+          [disableRipple]="true"
+          class="nav"
+        >
+          Overview
+        </a>
+        <a
+          mat-list-item
+          matTooltip="Manage Clusters"
+          routerLinkActive="active"
+          [disableRipple]="true"
+          class="nav"
+        >
+          Manage Clusters
+        </a>
+      </div>
+    </mat-expansion-panel>
+    <!-- <div class="divider"></div> -->
+  </mat-sidenav>
+</mat-sidenav-container>

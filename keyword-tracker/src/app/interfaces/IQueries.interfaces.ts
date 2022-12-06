@@ -1,4 +1,4 @@
-import { IPage } from './IPages.interfaces';
+import { IPage, IPagesData } from './IPages.interfaces';
 
 export interface IQuery {
   id: number;
@@ -10,6 +10,7 @@ export interface IQuery {
   totalImpressions: number;
   avgPosition: number;
   avgCtr: number;
+  pair_data: IPagesData[];
 }
 
 export interface IQueryData {
