@@ -94,7 +94,6 @@ export class DesignatedPageComponent implements OnInit, OnDestroy {
       .getDesignatedSuggestions(this.params, this.filters)
       .pipe(takeUntil(this._destroy$))
       .subscribe((results) => {
-        console.log(results);
         this.dataSource = results.data;
         this.length = results.length;
         this.dataSource.paginator = this.paginator;
@@ -132,7 +131,6 @@ export class DesignatedPageComponent implements OnInit, OnDestroy {
   }
 
   selectAll(event: MatCheckboxChange) {
-    console.log(this.dataSource, 'in selectAll');
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this.isAllSelected()
       ? this.select.clear()
@@ -143,13 +141,11 @@ export class DesignatedPageComponent implements OnInit, OnDestroy {
 
   assignDesignatedPage() {
     this.store.dispatch(showLoading());
-    console.log(this.select.selected);
     const arr: { queryId: number; pageId: number }[] = [];
 
     this.select.selected.forEach((query) => {
       arr.push({ queryId: query.id, pageId: query.pair_data[0].page.id });
     });
-    console.log(arr);
     return this.queryService
       .bulkAssignDesignatedPage(arr)
       .pipe(take(1))

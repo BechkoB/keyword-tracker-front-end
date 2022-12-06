@@ -133,7 +133,6 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.store.dispatch(showLoading());
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
     this.params = this.params.set('skip', skip).set('take', event.pageSize);
-    console.log(this.params);
     this.setTable();
   }
 

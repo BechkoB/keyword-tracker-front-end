@@ -50,7 +50,6 @@ export class EditComponent implements OnInit {
       return;
     }
     this.type = this.data.from;
-    console.log(this.type);
     this.initForm();
   }
 

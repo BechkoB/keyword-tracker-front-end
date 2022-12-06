@@ -111,9 +111,6 @@ export class NewQueriesComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((results) => {
         this.length = results.length;
         this.dataSource = results.data;
-        console.log(typeof results.data[0].query_relevant);
-        console.log(results.data[0].query_relevant);
-
         this.dataSource.paginator = this.paginator;
         this.store.dispatch(hideLoading());
       });

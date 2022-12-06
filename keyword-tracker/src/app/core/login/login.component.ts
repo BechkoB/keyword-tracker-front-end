@@ -34,7 +34,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.authState.subscribe((user) => {
-      console.log(user, 'from login user');
       this.store.dispatch(showLoading());
       if (user === null) {
         this.store.dispatch(hideLoading());
