@@ -45,10 +45,10 @@ export class PageDetailsComponent implements OnInit, AfterViewInit {
   startDate = moment(this.endDate).subtract(3, 'months').format('YYYY-MM-DD');
   displayedColumns: string[] = [
     'url',
-    'position',
-    'impressions',
-    'clicks',
-    'ctr'
+    'avgPosition',
+    'totalImpressions',
+    'totalClicks',
+    'avgCtr'
   ];
   constructor(
     private route: ActivatedRoute,
@@ -101,6 +101,7 @@ export class PageDetailsComponent implements OnInit, AfterViewInit {
         },
         error: (err: any) => {
           console.error(err);
+          this.store.dispatch(hideLoading());
           this.alert.error(
             'Something went wrong while fetching data.. Please try again later.'
           );

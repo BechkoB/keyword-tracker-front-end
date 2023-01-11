@@ -46,6 +46,15 @@ export class UserService {
     return result;
   }
 
+  autoLogin(userData: IUser) {
+    if (new Date().getTime() < userData.tokenExpiresIn) {
+      this._loginStatus.next(true);
+      return true;
+    }
+    this.onLogout();
+    return false;
+  }
+
   onLogout(): void {
     localStorage.clear();
     this._loginStatus.next(false);

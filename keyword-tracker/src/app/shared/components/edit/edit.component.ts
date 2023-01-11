@@ -102,6 +102,7 @@ export class EditComponent implements OnInit {
         error: (err) => {
           console.error(err);
           this.alert.error('Error while editing...Please try again later');
+          this.router.navigateByUrl('/');
         }
       });
   }

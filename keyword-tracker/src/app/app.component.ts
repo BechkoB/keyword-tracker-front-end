@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { IUser } from './interfaces/IUser.interface';
 import { UserService } from './services/user.service';
-import { hideLoading, showLoading } from './store/actions';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -32,10 +32,9 @@ export class AppComponent implements OnInit {
     });
     this.user = JSON.parse(localStorage.getItem('userData') as string);
     if (this.user) {
-      this.userService.userLoggedIn = true;
-      this.loginStatus$ = this.userService.hasUserLoggedIn;
+      this.userService.autoLogin(this.user);
     }
+    this.userService.onLogout();
     this.loginStatus$ = this.userService.hasUserLoggedIn;
-    // this.store.dispatch(hideLoading());
   }
 }

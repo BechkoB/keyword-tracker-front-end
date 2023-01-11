@@ -108,11 +108,22 @@ export class NewQueriesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.queryService
       .getNewQueries(this.params, this.filters)
       .pipe(takeUntil(this._destroy$))
-      .subscribe((results) => {
-        this.length = results.length;
-        this.dataSource = results.data;
-        this.dataSource.paginator = this.paginator;
-        this.store.dispatch(hideLoading());
+      .subscribe({
+        next: (results) => {
+          this.length = results.length;
+          this.dataSource = results.data;
+          this.dataSource.paginator = this.paginator;
+          this.store.dispatch(hideLoading());
+        },
+        error: (err) => {
+          console.error(err);
+          localStorage.clear();
+          this.router.navigateByUrl('/login');
+          this.alert.error(
+            err.error.msg || 'Something went wrong, please try again later...'
+          );
+          this.store.dispatch(hideLoading());
+        }
       });
   }
 

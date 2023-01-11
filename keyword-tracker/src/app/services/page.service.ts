@@ -11,7 +11,7 @@ export class PageService {
   constructor(private httpService: HttpService) {}
 
   getById(id: string, filters: IFilters, params: HttpParams): Observable<any> {
-    return this.httpService.post(`pages/${id}?` + params, filters);
+    return this.httpService.post(`pages/${id}?` + params, { filters });
   }
 
   edit(body: object, name: string): Observable<any> {

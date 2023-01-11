@@ -39,10 +39,10 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<IPage>;
   displayedColumns: string[] = [
     'url',
-    'position',
-    'impressions',
-    'clicks',
-    'ctr',
+    'avgPosition',
+    'totalImpressions',
+    'totalClicks',
+    'avgCtr',
     'designated'
   ];
 
@@ -118,6 +118,7 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           console.error(err);
+          this.store.dispatch(hideLoading());
           this.alert.error(
             `Something went wrong while fetching data for query whit id: ${this.queryId}`
           );

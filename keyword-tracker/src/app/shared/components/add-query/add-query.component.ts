@@ -54,6 +54,7 @@ export class AddQueryComponent implements OnInit {
         error: (err: any) => {
           console.error(err);
           this.alert.error(`Error while adding query: ${err.error.msg}`);
+          this.router.navigateByUrl('/');
         }
       });
   }

@@ -51,28 +51,28 @@
       <td mat-cell *matCellDef="let row" (click)="details(row)">{{ row?.page_name | transformString }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="position">
+    <ng-container matColumnDef="avgPosition">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
       <td mat-cell *matCellDef="let row">
         {{ row.avgPosition.toFixed(2) }}
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="impressions">
+    <ng-container matColumnDef="totalImpressions">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Impressions</th>
       <td mat-cell *matCellDef="let row">
         {{ row.totalImpressions }}
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="clicks">
+    <ng-container matColumnDef="totalClicks">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Clicks</th>
       <td mat-cell *matCellDef="let row">
         {{ row.totalClicks }}
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="ctr">
+    <ng-container matColumnDef="avgCtr">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Ctr</th>
       <td mat-cell *matCellDef="let row">
         {{ row.avgCtr | CtrTransform }}

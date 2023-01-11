@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, UrlTree } from '@angular/router';
-import { take } from 'rxjs';
 import { UserService } from '../services/user.service';
 
 @Injectable({
@@ -11,15 +10,12 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router, private userService: UserService) {}
 
   canActivate(): boolean | UrlTree {
-    this.userService.hasUserLoggedIn.pipe(take(1)).subscribe((isLoggedIn) => {
-      this.hasUser = isLoggedIn;
-    });
-
-    if (!this.hasUser) {
-      this.router.navigate(['login']);
-      return false;
+    console.log('entered canActive AuthGuard');
+    const user = JSON.parse(localStorage.getItem('userData') as string);
+    if (user) {
+      return this.userService.autoLogin(user);
     }
-
-    return true;
+    this.router.navigateByUrl('/login');
+    return false;
   }
 }
