@@ -147,6 +147,7 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(EditComponent, {
       width: '800px',
       height: '500px',
+      autoFocus: false,
       data: {
         query,
         from: 'query'

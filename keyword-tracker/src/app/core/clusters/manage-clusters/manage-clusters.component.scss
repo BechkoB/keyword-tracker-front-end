@@ -1,0 +1,59 @@
+.tabs-wrapper {
+  border-radius: 30px;
+}
+
+.selectBtn {
+  padding: 5px 20px;
+  background-color: #d3e3fd;
+  font-weight: 400;
+  font-size: 12px;
+  border-radius: 20px;
+  margin-left: 2rem;
+  margin-top: 1.25rem;
+  min-width: 8rem;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  display: flex;
+  margin-left: 2rem;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+  margin-left: 2rem;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}

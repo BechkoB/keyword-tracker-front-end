@@ -62,7 +62,6 @@ export class UserService {
       if (user) {
         this.authService.signOut().then(() => {
           this.store.dispatch(hideLoading());
-          console.log('User logged out');
         });
       }
     });

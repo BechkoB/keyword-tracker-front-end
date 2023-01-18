@@ -13,6 +13,9 @@ import { OverviewComponent as PagesOverviewComponent } from './core/pages/compon
 
 import { NewQueriesComponent } from './core/queries/components/new-queries/new-queries.component';
 import { DesignatedPageComponent } from './core/queries/components/designated-page/designated-page.component';
+import { ClustersComponent } from './core/clusters/clusters.component';
+import { ManageClustersComponent } from './core/clusters/manage-clusters/manage-clusters.component';
+import { EditClustersComponent } from './core/clusters/edit-clusters/edit-clusters.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/queries/overview', pathMatch: 'full' },
@@ -23,6 +26,23 @@ const routes: Routes = [
     component: MainComponent,
     canActivate: [AuthGuard],
     children: [
+      {
+        path: 'clusters',
+        component: ClustersComponent,
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: 'manage',
+            component: ManageClustersComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: 'edit',
+            component: EditClustersComponent,
+            canActivate: [AuthGuard]
+          }
+        ]
+      },
       {
         path: 'queries',
         data: { type: 'queries' },

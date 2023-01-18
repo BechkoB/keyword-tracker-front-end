@@ -55,6 +55,7 @@
           [routerLink]="'/pages/overview'"
           matTooltip="Pages Overview"
           routerLinkActive="active"
+          matTooltipPosition="right"
           [disableRipple]="true"
           class="nav"
         >
@@ -65,6 +66,7 @@
           matTooltip="Tags"
           routerLinkActive="active"
           [disableRipple]="true"
+          matTooltipPosition="right"
           class="nav"
         >
           Tags
@@ -89,21 +91,25 @@
       <div class="flex flex-col">
         <a
           mat-list-item
-          matTooltip="Queries"
-          routerLinkActive="active"
-          [disableRipple]="true"
-          class="nav"
-        >
-          Overview
-        </a>
-        <a
-          mat-list-item
+          [routerLink]="'/clusters/manage'"
           matTooltip="Manage Clusters"
           routerLinkActive="active"
           [disableRipple]="true"
+          matTooltipPosition="right"
           class="nav"
         >
           Manage Clusters
+        </a>
+         <a
+          mat-list-item
+          [routerLink]="'/clusters/edit'"
+          matTooltip="Edit Clusters"
+          routerLinkActive="active"
+          matTooltipPosition="right"
+          [disableRipple]="true"
+          class="nav"
+        >
+          Bulk Edit Clusters
         </a>
       </div>
     </mat-expansion-panel>

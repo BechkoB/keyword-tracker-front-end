@@ -36,6 +36,7 @@ export class DateComponent implements OnInit {
       width: '450px',
       height: '540px',
       panelClass: 'date-modal',
+      autoFocus: false,
       data: this.type
     });
 

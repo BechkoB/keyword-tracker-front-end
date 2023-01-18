@@ -158,7 +158,7 @@
           [matTooltipPosition]="'above'"
           >search</mat-icon
         >
-        <input matInput #input (keyup.enter)="searchQuery($event)" [value]="filters.query"/>
+        <input matInput #input placeholder="Search for queries" (keyup.enter)="searchQuery($event)" [value]="filters.query"/>
         <ng-container *ngIf="input.value !== ''">
           <mat-icon
             class="mr-2"

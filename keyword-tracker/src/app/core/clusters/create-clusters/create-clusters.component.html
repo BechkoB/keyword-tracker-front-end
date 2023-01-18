@@ -1,0 +1,79 @@
+<div class="title">
+  <p class="pl-10 pt-4 text-2xl font-bold text-grey-darker">Create Clusters</p>
+</div>
+<form
+  [formGroup]="clusterForm"
+  class="flex flex-col justify-center align-middle content-center"
+>
+  <div class="container">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Enter cluster name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Choose Main Cluster</mat-label>
+      <mat-select formControlName="parent" (selectionChange)="onSelectionChange($event)">
+        <mat-option>-- None --</mat-option>
+        <ng-container *ngFor="let cluster of mainClusters">
+            <mat-option [value]="cluster">
+              {{ cluster.name }}
+            </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+    <div>
+    <mat-form-field appearance="outline" class="w-full" *ngIf="subClusters">
+      <mat-label>Choose Sub Cluster</mat-label>
+      <mat-select formControlName="subCluster" >
+        <mat-option>-- None --</mat-option>
+        <ng-container *ngFor="let cluster of subClusters">
+            <mat-option [value]="cluster">
+              {{ cluster.name }}
+            </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <button
+    [disabled]="!clusterForm.touched || !clusterForm.dirty"
+    class="clusterBtn"
+    [mat-dialog-close]="clusterForm.value"
+  >
+    SAVE NEW CLUSTER
+  </button>
+</form>
+
+
+<!--
+      <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Choose Main Cluster</mat-label>
+      <mat-select formControlName="parent">
+        <mat-option>-- None --</mat-option>
+        <ng-container *ngFor="let cluster of clusters">
+          <ng-container *ngIf="cluster.children.length === 0">
+            <mat-option [value]="cluster">
+              {{ cluster.name + '    *' }}
+            </mat-option>
+          </ng-container>
+          <ng-container *ngIf="cluster.children.length > 0">
+            <mat-optgroup
+              [label]="'Main cluster:  ' + cluster.name"
+            >
+              <mat-option [value]="cluster">
+                {{ cluster.name + '    *' }}
+              </mat-option>
+              <mat-option
+                *ngFor="let children of cluster.children"
+                [value]="children"
+              >
+                {{ '       -  ' + children.name }}
+              </mat-option>
+            </mat-optgroup>
+          </ng-container>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+ -->

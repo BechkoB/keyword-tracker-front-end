@@ -94,6 +94,7 @@ export class NewQueriesComponent implements OnInit, AfterViewInit, OnDestroy {
     const dialogRef = this.dialog.open(FiltersComponent, {
       width: '550px',
       height: '550px',
+      autoFocus: false,
       data: 'queries'
     });
     // dialogRef.afterClosed().subscribe((result) => {

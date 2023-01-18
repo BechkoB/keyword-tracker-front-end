@@ -33,6 +33,8 @@ export class AppComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('userData') as string);
     if (this.user) {
       this.userService.autoLogin(this.user);
+      this.loginStatus$ = this.userService.hasUserLoggedIn;
+      return;
     }
     this.userService.onLogout();
     this.loginStatus$ = this.userService.hasUserLoggedIn;

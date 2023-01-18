@@ -148,7 +148,7 @@
           [matTooltipPosition]="'above'"
           >search</mat-icon
         >
-        <input matInput #input (keyup.enter)="searchPage($event)" />
+        <input matInput #input placeholder="Search for pages" (keyup.enter)="searchPage($event)" />
         <ng-container *ngIf="input.value !== ''">
           <mat-icon
             class="mr-2"

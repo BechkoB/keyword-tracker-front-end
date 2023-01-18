@@ -1,19 +1,19 @@
 <app-date class="float-right w-80"></app-date>
- <button
-      *ngIf="hasFilters || filters.query !== ''"
-      class="btn-filters mb-10 mx-2"
-      matTooltip="Clear Filters"
-      matTooltipPosition="above"
-      (click)="resetFilters()"
-    >
-      Clear Filters
-      <mat-icon
-        class="relative top-0.5 w-1 h-1"
-        aria-hidden="false"
-        aria-label="Example home icon"
-        fontIcon="close"
-      ></mat-icon>
-    </button>
+<button
+  *ngIf="hasFilters || filters.query !== ''"
+  class="btn-filters mb-10 mx-2"
+  matTooltip="Clear Filters"
+  matTooltipPosition="above"
+  (click)="resetFilters()"
+>
+  Clear Filters
+  <mat-icon
+    class="relative top-0.5 w-1 h-1"
+    aria-hidden="false"
+    aria-label="Example home icon"
+    fontIcon="close"
+  ></mat-icon>
+</button>
 <div>
   <section class="flex ml-6">
     <div class="flex flex-col">
@@ -21,21 +21,31 @@
         Query: {{ query ? query.name : '' }}
       </h1>
     </div>
-    <button class="btn-filters mt-1" (click)="edit(query)" matTooltip="Edit" matTooltipPosition="above">
+    <button
+      class="btn-filters mt-1"
+      (click)="edit(query)"
+      matTooltip="Edit"
+      matTooltipPosition="above"
+    >
       Bearbeiten
     </button>
   </section>
   <!-- justify-between -->
   <section class="flex w-4/5 px-6 my-4">
-    <div class="font-bold">Designated Page: </div>
+    <div class="font-bold">Designated Page:</div>
     <div class="font-bold ml-4">{{ designated ? designated : 'No' }}</div>
     <!-- <div class="font-bold">Suchvolumen</div> -->
     <!-- <div>
       {{ query.qu?.suchvolumen }}
     </div> -->
-    <div class="font-bold ml-8">Relevant: </div>
+    <div class="font-bold ml-8">Relevant:</div>
     <div class="font-bold ml-4">
-      {{ query ? query.relevant === true ? 'Yes' : 'No' : null }}
+      {{ query ? (query.relevant === true ? 'Yes' : 'No') : null }}
+    </div>
+
+    <div class="font-bold ml-8">Cluster:</div>
+    <div class="font-bold ml-4">
+      {{ query ? query.cluster ? query.cluster.name : '' : null }}
     </div>
   </section>
   <div class="divider"></div>
@@ -48,7 +58,9 @@
   >
     <ng-container matColumnDef="url">
       <th mat-header-cell *matHeaderCellDef>Pages</th>
-      <td mat-cell *matCellDef="let row" (click)="details(row)">{{ row?.page_name | transformString }}</td>
+      <td mat-cell *matCellDef="let row" (click)="details(row)">
+        {{ row?.page_name | transformString }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="avgPosition">

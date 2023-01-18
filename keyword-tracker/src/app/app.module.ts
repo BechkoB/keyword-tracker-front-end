@@ -68,6 +68,11 @@ import { NewQueriesComponent } from './core/queries/components/new-queries/new-q
 import { DesignatedPageComponent } from './core/queries/components/designated-page/designated-page.component';
 import { OverviewComponent as QueryOverviewComponent } from './core/queries/components/overview/overview.component';
 import { OverviewComponent as PageOverviewComponent } from './core/pages/components/overview/overview.component';
+import { ClustersComponent } from './core/clusters/clusters.component';
+import { ManageClustersComponent } from './core/clusters/manage-clusters/manage-clusters.component';
+import { EditClustersComponent } from './core/clusters/edit-clusters/edit-clusters.component';
+import { CreateClustersComponent } from './core/clusters/create-clusters/create-clusters.component';
+import { AssignClustersComponent } from './core/clusters/assign-clusters/assign-clusters.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +97,12 @@ import { OverviewComponent as PageOverviewComponent } from './core/pages/compone
     NewQueriesComponent,
     DesignatedPageComponent,
     QueryOverviewComponent,
-    PageOverviewComponent
+    PageOverviewComponent,
+    ClustersComponent,
+    ManageClustersComponent,
+    EditClustersComponent,
+    CreateClustersComponent,
+    AssignClustersComponent
   ],
   imports: [
     MatButtonModule,

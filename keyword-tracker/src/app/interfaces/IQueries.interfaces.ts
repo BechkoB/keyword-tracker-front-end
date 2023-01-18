@@ -1,3 +1,4 @@
+import { IClusters } from './IClusters.interface';
 import { IPage, IPagesData } from './IPages.interfaces';
 
 export interface IQuery {
@@ -5,6 +6,7 @@ export interface IQuery {
   name: string;
   queries: IQueryData[];
   designated: IPage;
+  cluster: IClusters;
   relevant: boolean | null;
   totalClicks: number;
   totalImpressions: number;

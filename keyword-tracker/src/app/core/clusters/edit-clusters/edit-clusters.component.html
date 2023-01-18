@@ -1,35 +1,5 @@
-<h1 class="text-3xl font-bold ml-4 mt-8">New Queries</h1>
+<h1 class="text-3xl font-bold ml-4 mt-8">Assign Clusters</h1>
 <div class="divider"></div>
-<div class="flex justify-between">
-  <div class="flex">
-    <app-date class="mb-10 mx-2 w-80"></app-date>
-
-    <button
-      class="btn-filters mb-10 mx-2"
-      matTooltip="Filters"
-      matTooltipPosition="above"
-      (click)="queryFilters()"
-    >
-      Filters
-      <mat-icon>add</mat-icon>
-    </button>
-    <button
-      *ngIf="hasFilters || filters.query !== ''"
-      class="btn-filters mb-10 mx-2"
-      matTooltip="Clear Filters"
-      matTooltipPosition="above"
-      (click)="resetFilters()"
-    >
-      Clear Filters
-      <mat-icon
-        class="relative top-0.5 w-1 h-1"
-        aria-hidden="false"
-        aria-label="Example home icon"
-        fontIcon="close"
-      ></mat-icon>
-    </button>
-  </div>
-</div>
 <table
   mat-table
   #table
@@ -45,7 +15,7 @@
           [matTooltipPosition]="'above'"
           >search</mat-icon
         >
-        <input matInput #input placeholder="Search for queries" (keyup.enter)="searchQuery($event)" [value]="filters.query"/>
+        <input matInput #input placeholder="Search for queries" (keyup.enter)="searchQuery(input.value)"/>
         <ng-container *ngIf="input.value !== ''">
           <mat-icon
             class="mr-2"
@@ -61,15 +31,12 @@
 
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>
-      <button class="selectBtn" (click)="updateRelevant(true)">
-        mark as relevant
-      </button>
-      <button class="selectBtn" (click)="updateRelevant(false)">
-        mark as irrelevant
+      <button class="selectBtn" (click)="assignCluster()">
+        assign to cluster
       </button>
     </th>
     <td mat-cell *matCellDef="let row" (click)="details(row)">
-      {{ row?.query_name | transformString }}
+      {{ row.query_name | transformString }}
     </td>
   </ng-container>
   <ng-container matColumnDef="select">
@@ -94,28 +61,14 @@
   </ng-container>
 
   <ng-container matColumnDef="totalClicks">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>clicks</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Clicks</th>
     <td mat-cell *matCellDef="let row">{{ row?.totalClicks }}</td>
   </ng-container>
 
-  <ng-container matColumnDef="avgPosition">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>position</th>
-    <td mat-cell *matCellDef="let row">
-      {{ row?.avgPosition.toFixed(2) }}
-    </td>
-  </ng-container>
-
   <ng-container matColumnDef="totalImpressions">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>impressions</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Impressions</th>
     <td mat-cell *matCellDef="let row">
       {{ row?.totalImpressions }}
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="avgCtr">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>ctr</th>
-    <td mat-cell *matCellDef="let row">
-      {{ row?.avgCtr | CtrTransform }}
     </td>
   </ng-container>
 

@@ -10,7 +10,6 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router, private userService: UserService) {}
 
   canActivate(): boolean | UrlTree {
-    console.log('entered canActive AuthGuard');
     const user = JSON.parse(localStorage.getItem('userData') as string);
     if (user) {
       return this.userService.autoLogin(user);

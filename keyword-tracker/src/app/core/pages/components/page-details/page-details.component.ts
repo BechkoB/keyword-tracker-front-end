@@ -130,6 +130,7 @@ export class PageDetailsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(EditComponent, {
       width: '800px',
       height: '500px',
+      autoFocus: false,
       data: {
         page,
         from: 'page'

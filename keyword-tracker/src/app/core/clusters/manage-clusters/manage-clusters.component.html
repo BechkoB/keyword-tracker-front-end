@@ -1,0 +1,172 @@
+<h1 class="text-3xl font-bold ml-4 mt-8">Manage Clusters</h1>
+<div class="divider"></div>
+
+<mat-card class="tabs-wrapper">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="CLUSTERS">
+      <div>
+        <table
+          mat-table
+          #table
+          [dataSource]="dataSource"
+          matSort
+          multiTemplateDataRows
+          matSortActive="created"
+        >
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Clusters</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.name }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="search">
+            <th
+              class="mat-row flex"
+              mat-header-cell
+              *matHeaderCellDef
+              colspan="5"
+            >
+              <div class="search m-4">
+                <mat-icon
+                  [matTooltip]="'Search for Query'"
+                  [matTooltipPosition]="'above'"
+                  >search</mat-icon
+                >
+                <input
+                  matInput
+                  #input
+                  placeholder="Search for cluster"
+                  (keyup.enter)="searchClusters(input.value)"
+                />
+                <ng-container *ngIf="input.value !== ''">
+                  <mat-icon
+                    class="mr-2"
+                    matTooltip="Clear"
+                    matTooltipPosition="above"
+                    (click)="clearSearchField(input)"
+                    >clear</mat-icon
+                  >
+                </ng-container>
+              </div>
+              <div>
+                <button class="selectBtn" (click)="createClusters()">
+                  create cluster
+                </button>
+              </div>
+            </th>
+          </ng-container>
+
+          <ng-container matColumnDef="subclusters">
+            <th mat-header-cell *matHeaderCellDef>
+              Subclusters
+            </th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.children ? row.children.length : '' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="queries">
+            <th mat-header-cell *matHeaderCellDef>Queries</th>
+            <td mat-cell *matCellDef="let row">
+              <!-- {{ row?.queries.length > 0 ? row?.queries.length : '' }} -->
+              {{ '-----' }}
+            </td>
+          </ng-container>
+
+          <!-- <ng-container matColumnDef="esv">
+            <th mat-header-cell *matHeaderCellDef>ESV</th>
+            <td mat-cell *matCellDef="let row">{{ 'ESV' }}</td>
+          </ng-container> -->
+
+          <ng-container matColumnDef="avgPosition">
+            <th mat-header-cell *matHeaderCellDef>Position</th>
+            <td mat-cell *matCellDef="let row">
+              {{ 'avgPosition' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalImpressions">
+            <th mat-header-cell *matHeaderCellDef>Impressions</th>
+            <td mat-cell *matCellDef="let row">
+              {{ 'impressions' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="avgCtr">
+            <th mat-header-cell *matHeaderCellDef>CTR</th>
+            <td mat-cell *matCellDef="let row">
+              {{ 'avgCtr' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalClicks">
+            <th mat-header-cell *matHeaderCellDef>Clicks</th>
+            <td mat-cell *matCellDef="let row">
+              {{ 'totalClicks' }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="expandedDetail">
+            <td
+              mat-cell
+              *matCellDef="let element"
+              [attr.colspan]="queryColumns.length"
+            >
+              <div
+                class="example-element-detail"
+                [@detailExpand]="
+                  element === expandedElement ? 'expanded' : 'collapsed'
+                "
+              >
+                <div class="flex flex-col" *ngIf="element === expandedElement">
+                  <p class="m-2" *ngFor="let children of element.children">
+                    {{ children.name }}
+                  </p>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="['search']"
+            class="second-header-row"
+          >
+            >
+          </tr>
+          <tr mat-header-row *matHeaderRowDef="queryColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let element; columns: queryColumns"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="
+              expandedElement = expandedElement === element ? null : element
+            "
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="example-detail-row"
+          ></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">
+              No data matching the filters...
+            </td>
+          </tr>
+        </table>
+        <mat-paginator
+          #paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[10, 20, 50, 100]"
+          aria-label="Select page"
+          (page)="onPageChange($event)"
+        ></mat-paginator>
+      </div>
+    </mat-tab>
+    <mat-tab label="TAGS">Tags</mat-tab>
+  </mat-tab-group>
+</mat-card>

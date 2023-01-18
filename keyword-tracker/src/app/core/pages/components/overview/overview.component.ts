@@ -122,6 +122,7 @@ export class OverviewComponent implements OnInit, AfterViewInit, OnDestroy {
     const dialogRef = this.dialog.open(FiltersComponent, {
       width: '550px',
       height: '550px',
+      autoFocus: false,
       data: 'pages'
     });
     dialogRef.afterClosed().subscribe((result) => {
