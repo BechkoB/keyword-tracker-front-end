@@ -39,6 +39,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   queryColumns: string[] = [
     'name',
     'subclusters',
+    'esv',
     'queries',
     'avgPosition',
     'avgCtr',
@@ -90,14 +91,97 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
     });
   }
 
+  calculate(clusters: IClusters[]) {
+    clusters.map((cluster) => {
+      let totalQueries = 0;
+      let totalImpressions = 0;
+      let totalClicks = 0;
+      let tempPosition = 0;
+      let tempCtr = 0;
+      let tempEsv = 0;
+      let countQueriesWithEsv = 0;
+      let tempQueryCount = 0;
+
+      if (cluster.queries.length > 0) {
+        totalQueries += cluster.queries.length;
+        cluster.queries.forEach((query) => {
+          console.log(2);
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          query.est_search_volume !== null
+            ? ((tempEsv += query.est_search_volume), countQueriesWithEsv++)
+            : null;
+          query.queries.forEach((queryData) => {
+            tempQueryCount++;
+            totalImpressions += queryData.impressions;
+            totalClicks += queryData.clicks;
+            tempPosition += queryData.position;
+            tempCtr += queryData.ctr;
+          });
+        });
+      }
+      if (cluster.children.length > 0) {
+        cluster.children.forEach((child) => {
+          console.log(child.name + ':queries = ' + child.queries.length);
+          if (child.queries.length > 0) {
+            totalQueries += child.queries.length;
+            child.queries.forEach((query) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              query.est_search_volume !== null
+                ? ((tempEsv += query.est_search_volume), countQueriesWithEsv++)
+                : null;
+              query.queries.forEach((queryData) => {
+                totalImpressions += queryData.impressions;
+                totalClicks += queryData.clicks;
+                tempPosition += queryData.position;
+                tempCtr += queryData.ctr;
+              });
+            });
+          }
+          if (child.children.length > 0) {
+            child.children.forEach((subChild) => {
+              if (subChild.queries.length > 0) {
+                totalQueries += subChild.queries.length;
+                subChild.queries.forEach((query) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                  query.est_search_volume !== null
+                    ? ((tempEsv += query.est_search_volume),
+                      countQueriesWithEsv++)
+                    : null;
+                  query.queries.forEach((queryData) => {
+                    totalImpressions += queryData.impressions;
+                    totalClicks += queryData.clicks;
+                    tempPosition += queryData.position;
+                    tempCtr += queryData.ctr;
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
+
+      cluster.totalImpressions = totalImpressions;
+      cluster.queriesCount = totalQueries;
+      cluster.totalClicks = totalClicks;
+      cluster.avgPosition = tempPosition
+        ? Number((tempPosition / totalQueries).toFixed(2))
+        : 0;
+      cluster.avgCtr = tempCtr
+        ? Number((tempCtr / totalQueries).toFixed(2))
+        : 0;
+      cluster.esv = tempEsv ? (tempEsv / countQueriesWithEsv).toFixed(2) : '0';
+    });
+    return clusters;
+  }
   fetchClusters() {
     this.clustersService
       .fetchAll(this.params, this.filters)
       .pipe(take(1))
       .subscribe({
         next: (result: IClusters[]) => {
-          this.clusters = result;
-          this.dataSource = new MatTableDataSource(result);
+          this.clusters = this.calculate(result);
+          console.log(this.clusters);
+          this.dataSource = new MatTableDataSource(this.clusters);
           this.dataSource.sort = this.sort;
           this.length = result.length;
           this.store.dispatch(hideLoading());

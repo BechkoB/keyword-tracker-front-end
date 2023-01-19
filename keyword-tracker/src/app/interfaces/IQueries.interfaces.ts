@@ -7,6 +7,8 @@ export interface IQuery {
   queries: IQueryData[];
   designated: IPage;
   cluster: IClusters;
+  est_search_volume: number | null;
+  esv_date: string;
   relevant: boolean | null;
   totalClicks: number;
   totalImpressions: number;
