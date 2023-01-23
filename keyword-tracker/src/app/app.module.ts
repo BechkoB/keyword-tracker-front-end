@@ -73,6 +73,7 @@ import { ManageClustersComponent } from './core/clusters/manage-clusters/manage-
 import { EditClustersComponent } from './core/clusters/edit-clusters/edit-clusters.component';
 import { CreateClustersComponent } from './core/clusters/create-clusters/create-clusters.component';
 import { AssignClustersComponent } from './core/clusters/assign-clusters/assign-clusters.component';
+import { MenuItemComponent } from './core/clusters/menu-item/menu-item.component';
 
 @NgModule({
   declarations: [
@@ -102,7 +103,8 @@ import { AssignClustersComponent } from './core/clusters/assign-clusters/assign-
     ManageClustersComponent,
     EditClustersComponent,
     CreateClustersComponent,
-    AssignClustersComponent
+    AssignClustersComponent,
+    MenuItemComponent
   ],
   imports: [
     MatButtonModule,

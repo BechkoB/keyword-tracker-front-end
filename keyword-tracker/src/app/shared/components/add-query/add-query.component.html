@@ -1,4 +1,9 @@
-<mat-icon id="close-icon" class="relative float-right cursor-pointer" mat-dialog-close>close</mat-icon>
+<mat-icon
+  id="close-icon"
+  class="relative float-right cursor-pointer"
+  mat-dialog-close
+  >close</mat-icon
+>
 <h1 class="text-center text-3xl font-bold my-6">New Query</h1>
 
 <form
@@ -18,18 +23,34 @@
     <input matInput formControlName="esv" />
   </mat-form-field>
   <mat-form-field appearance="outline" class="input">
-      <mat-label>Typ</mat-label>
-      <mat-select formControlName="typ">
-        <mat-option value="M">M</mat-option>
-        <mat-option value="T">T</mat-option>
-      </mat-select>
+    <mat-label>Typ</mat-label>
+    <mat-select formControlName="typ">
+      <mat-option value="M">M</mat-option>
+      <mat-option value="T">T</mat-option>
+    </mat-select>
   </mat-form-field>
 
-  <button
-    [disabled]="form.invalid"
-    class="justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-4 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
-    (click)="add(form)"
-  >
-    Save Query
-  </button>
+  <div class="flex">
+    <button
+      [disabled]="form.invalid"
+      class="justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-4 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
+      (click)="add(form)"
+    >
+      Save Query
+    </button>
+    <div
+      class="justify-center cursor-pointer bg-red-300 rounded-xl text-white w-50 py-1 px-4 m-auto text-xl disabled:bg-red-200 disabled:cursor-not-allowed"
+      (click)="fileInput.click()"
+    >
+      Upload File
+      <mat-icon class="pt-1">upload</mat-icon>
+    </div>
+  </div>
+  <input
+    #fileInput
+    (change)="onFileChange($event)"
+    type="file"
+    style="display: none"
+    accept=".csv, .xlsx"
+  />
 </form>

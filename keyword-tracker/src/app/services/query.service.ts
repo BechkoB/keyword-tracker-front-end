@@ -6,6 +6,12 @@ import { IPage } from '../interfaces/IPages.interfaces';
 import { IQuery } from '../interfaces/IQueries.interfaces';
 import { HttpService } from './http.service';
 
+interface ICsvUploads {
+  name: string;
+  esv: string | number;
+  clusterId: string | number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,8 +44,12 @@ export class QueryService {
     return this.httpService.patch('queries/update/bulk/designated/', body);
   }
 
+  bulkAddQueries(body: ICsvUploads[]): Observable<any> {
+    return this.httpService.post('queries/bulk/add', body);
+  }
+
   save(body: object): Observable<any> {
-    return this.httpService.post('queries/add', body);
+    return this.httpService.post('queries/create', body);
   }
 
   getDesignatedSuggestions(

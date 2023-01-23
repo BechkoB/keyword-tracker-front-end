@@ -99,7 +99,9 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
       .pipe(
         map(
           (el: { query: IQuery; pages: { data: IPage[]; length: number } }) => {
+            // check if query has designated page assigned
             if (el.query.designated) {
+              // toggle assigned designated page
               this.designatedSelect.toggle(el.query.designated.id);
               this.designated = el.query.designated.name;
             }
@@ -109,10 +111,10 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
       )
       .subscribe({
         next: (result) => {
+          console.log(result);
           this.query = result.query;
           this.dataSource = new MatTableDataSource(result.pages.data);
           this.length = result.pages.length;
-          this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
           this.store.dispatch(hideLoading());
         },
@@ -140,6 +142,7 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
     };
     this.params = this.params.set('skip', 0);
     this.sharedService.hasFilterSubject.next(false);
+    this.paginator.firstPage();
     this.getQuery();
   }
 

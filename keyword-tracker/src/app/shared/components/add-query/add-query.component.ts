@@ -8,6 +8,15 @@ import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { AlertService } from 'src/app/services/alert.service';
 import { QueryService } from 'src/app/services/query.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { Store } from '@ngrx/store';
+import * as XLSX from 'xlsx';
+import { hideLoading, showLoading } from 'src/app/store/actions';
+
+interface ICsvUploads {
+  name: string;
+  esv: string | number;
+  clusterId: string | number;
+}
 
 @Component({
   selector: 'app-add-query',
@@ -28,7 +37,8 @@ export class AddQueryComponent implements OnInit {
     private sharedService: SharedService,
     private router: Router,
     private alert: AlertService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private store: Store<{ showLoading: boolean }>
   ) {}
 
   ngOnInit(): void {
@@ -44,10 +54,6 @@ export class AddQueryComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          const params = new HttpParams()
-            .set('skip', 0)
-            .set('take', 10)
-            .set('type', 'queries');
           this.router.navigateByUrl('/');
           this.alert.success('Query added successfully');
         },
@@ -57,5 +63,39 @@ export class AddQueryComponent implements OnInit {
           this.router.navigateByUrl('/');
         }
       });
+  }
+
+  onFileChange(e: any) {
+    console.log('entered file upload');
+    const selectedFile = e.target.files[0];
+    const fileReader = new FileReader();
+    fileReader.readAsBinaryString(selectedFile);
+
+    fileReader.onload = (event) => {
+      const binaryData = event.target?.result;
+      const fileData = XLSX.read(binaryData, { type: 'binary' });
+      fileData.SheetNames.forEach((sheet) => {
+        const data: ICsvUploads[] = XLSX.utils.sheet_to_json(
+          fileData.Sheets[sheet]
+        );
+        if (data) {
+          this.store.dispatch(showLoading());
+          this.dialog.closeAll();
+          this.queryService
+            .bulkAddQueries(data)
+            .pipe(take(1))
+            .subscribe({
+              next: () => {
+                this.store.dispatch(hideLoading());
+                this.alert.success('Queries added successfully');
+              },
+              error: (err) => {
+                this.store.dispatch(hideLoading());
+                this.alert.error(`Error while adding query: ${err.error.msg}`);
+              }
+            });
+        }
+      });
+    };
   }
 }

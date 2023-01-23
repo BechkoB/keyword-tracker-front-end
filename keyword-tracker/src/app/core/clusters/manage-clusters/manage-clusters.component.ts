@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -46,7 +52,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
     'totalClicks',
     'totalImpressions'
   ];
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<IClusters>;
   clusters: IClusters[];
   filters = {
     cluster: ''
@@ -74,6 +80,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     private alert: AlertService,
     private clustersService: ClustersService,
+    private cd: ChangeDetectorRef,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
@@ -83,12 +90,21 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.cd.detectChanges();
     this.sort.sortChange.subscribe(() => {
       this.store.dispatch(showLoading());
       this.params = this.params.set('order', this.sort.active);
       this.params = this.params.set('direction', this.sort.direction);
       this.fetchClusters();
     });
+  }
+
+  onQueriesClicked(item: IClusters) {
+    console.log(item);
+  }
+
+  expand(item: IClusters) {
+    console.log(item);
   }
 
   calculate(clusters: IClusters[]) {
@@ -173,6 +189,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
     });
     return clusters;
   }
+
   fetchClusters() {
     this.clustersService
       .fetchAll(this.params, this.filters)
@@ -197,16 +214,14 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
     this.store.dispatch(showLoading());
     this.filters.cluster = value.trim().toLowerCase();
     this.fetchClusters();
-    if (this.dataSource.paginator) {
-      this.paginator.pageIndex = 0;
-      this.dataSource.paginator.firstPage();
-    }
+    this.paginator.firstPage();
   }
 
   clearSearchField(input: HTMLInputElement) {
     this.store.dispatch(showLoading());
     input.value = '';
     this.fetchClusters();
+    this.paginator.firstPage();
   }
 
   onPageChange(event: PageEvent): void {

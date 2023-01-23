@@ -130,6 +130,7 @@ export class OverviewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.hasFilters = true;
         this.sharedService.setHasFilters = true;
         this.sharedService.filtersSubject.next(result);
+        this.paginator.firstPage();
       }
     });
   }
@@ -156,10 +157,7 @@ export class OverviewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filters.query = filterValue.trim().toLowerCase();
     this.hasFilters = true;
     this.setTable();
-    if (this.dataSource.paginator) {
-      this.paginator.pageIndex = 0;
-      this.dataSource.paginator.firstPage();
-    }
+    this.paginator.firstPage();
   }
 
   clearSearchField(input: HTMLInputElement) {

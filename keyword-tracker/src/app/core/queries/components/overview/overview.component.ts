@@ -112,12 +112,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.store.dispatch(showLoading());
     const filterValue = (event.target as HTMLInputElement).value;
     this.filters.query = filterValue.trim().toLowerCase();
-    this.hasFilters = true;
     this.setTable();
-    if (this.dataSource.paginator) {
-      this.paginator.pageIndex = 0;
-      this.dataSource.paginator.firstPage();
-    }
+    this.paginator.firstPage();
   }
 
   clearSearchField(input: HTMLInputElement) {
@@ -150,6 +146,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.hasFilters = true;
         this.sharedService.setHasFilters = true;
         this.sharedService.filtersSubject.next(result);
+        this.paginator.firstPage();
       }
     });
   }
@@ -171,9 +168,13 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   }
 
   addQuery(): void {
-    this.dialog.open(AddQueryComponent, {
+    const dialogRef = this.dialog.open(AddQueryComponent, {
       width: '800px',
-      height: '500px'
+      height: '500px',
+      autoFocus: false
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      this.setTable();
     });
   }
 
