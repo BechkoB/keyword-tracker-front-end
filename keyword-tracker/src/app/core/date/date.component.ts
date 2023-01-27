@@ -42,12 +42,12 @@ export class DateComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.hasFilters = true;
+        // this.hasFilters = true;
         this.filters.dates.start = moment(result.start).format('YYYY-MM-DD');
         this.filters.dates.end = moment(result.end).format('YYYY-MM-DD');
-        this.sharedService.setHasFilters = true;
+        // this.sharedService.setHasFilters = true;
         this.sharedService.setFilters = this.filters;
-        this.sharedService.hasFilterSubject.next(true);
+        // this.sharedService.hasFilterSubject.next(true);
       }
     });
   }

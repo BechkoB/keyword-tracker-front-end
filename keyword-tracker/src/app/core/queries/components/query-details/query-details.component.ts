@@ -1,11 +1,17 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { map, of, Subject, take, takeUntil } from 'rxjs';
+import { map, Subject, take, takeUntil } from 'rxjs';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { IPage } from 'src/app/interfaces/IPages.interfaces';
 import { IQuery } from 'src/app/interfaces/IQueries.interfaces';
@@ -24,7 +30,7 @@ import * as moment from 'moment';
   templateUrl: './query-details.component.html',
   styleUrls: ['./query-details.component.scss']
 })
-export class QueryDetailsComponent implements OnInit, AfterViewInit {
+export class QueryDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<any>;
@@ -230,5 +236,11 @@ export class QueryDetailsComponent implements OnInit, AfterViewInit {
 
   details(row: any) {
     this.router.navigateByUrl(`pages/details/${row.page_id}`);
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(null);
+    this._destroy$.complete();
+    this._destroy$.unsubscribe();
   }
 }

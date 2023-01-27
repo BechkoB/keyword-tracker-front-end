@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy
+} from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -7,7 +13,6 @@ import { Store } from '@ngrx/store';
 import * as moment from 'moment';
 import { Subject, takeUntil } from 'rxjs';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
-import { IQuery } from 'src/app/interfaces/IQueries.interfaces';
 import { AlertService } from 'src/app/services/alert.service';
 import { HttpService } from 'src/app/services/http.service';
 import { QueryService } from 'src/app/services/query.service';
@@ -24,7 +29,7 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss']
 })
-export class OverviewComponent implements OnInit, AfterViewInit {
+export class OverviewComponent implements OnInit, AfterViewInit, OnDestroy {
   private _destroy$: Subject<any>;
   dataSelect = new SelectionModel<string>(true, []);
   queryColumns: string[] = ['name', 'totalImpressions', 'totalClicks'];
@@ -129,6 +134,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   onPageChange(event: PageEvent): void {
     this.store.dispatch(showLoading());
     const skip = event.pageIndex === 0 ? 0 : event.pageIndex * event.pageSize;
+    console.log(skip);
+    console.log(event.pageSize);
     this.params = this.params.set('skip', skip).set('take', event.pageSize);
     this.setTable();
   }
@@ -187,5 +194,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     } else {
       this.queryColumns.push(from);
     }
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(null);
+    this._destroy$.complete();
+    this._destroy$.unsubscribe();
   }
 }

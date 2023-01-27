@@ -14,11 +14,7 @@ import { HttpService } from './http.service';
   providedIn: 'root'
 })
 export class SharedService {
-  constructor(
-    private httpService: HttpService,
-    private router: Router,
-    private store: Store<{ showLoading: boolean }>
-  ) {}
+  constructor() {}
 
   endDate = moment().format('YYYY-MM-DD');
   startDate = moment(this.endDate).subtract(3, 'months').format('YYYY-MM-DD');
@@ -30,7 +26,9 @@ export class SharedService {
     dates: { start: this.startDate, end: this.endDate },
     queryTyp: '',
     relevant: null,
-    query: ''
+    query: '',
+    cluster: undefined,
+    clusterId: undefined
   };
 
   public hasFilterSubject = new BehaviorSubject<boolean>(false);

@@ -16,6 +16,7 @@ import { DesignatedPageComponent } from './core/queries/components/designated-pa
 import { ClustersComponent } from './core/clusters/clusters.component';
 import { ManageClustersComponent } from './core/clusters/manage-clusters/manage-clusters.component';
 import { EditClustersComponent } from './core/clusters/edit-clusters/edit-clusters.component';
+import { QueriesListComponent } from './core/clusters/queries-list/queries-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/queries/overview', pathMatch: 'full' },
@@ -39,6 +40,11 @@ const routes: Routes = [
           {
             path: 'edit',
             component: EditClustersComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: ':id/queries',
+            component: QueriesListComponent,
             canActivate: [AuthGuard]
           }
         ]

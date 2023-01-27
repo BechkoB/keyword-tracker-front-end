@@ -18,4 +18,6 @@ export interface IFilters {
   queryTyp: string;
   relevant: boolean | null;
   query: string;
+  cluster?: string;
+  clusterId?: number;
 }

@@ -1,12 +1,14 @@
 import { HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Store } from '@ngrx/store';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { IClusters } from 'src/app/interfaces/IClusters.interface';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
 import { AlertService } from 'src/app/services/alert.service';
 import { ClustersService } from 'src/app/services/clusters.service';
+import { SharedService } from 'src/app/services/shared.service';
 import { hideLoading, showLoading } from 'src/app/store/actions';
 
 @Component({
@@ -14,11 +16,12 @@ import { hideLoading, showLoading } from 'src/app/store/actions';
   templateUrl: './assign-clusters.component.html',
   styleUrls: ['./assign-clusters.component.scss']
 })
-export class AssignClustersComponent implements OnInit {
+export class AssignClustersComponent implements OnInit, OnDestroy {
   clusters: IClusters[];
   mainClusters: IClusters[] | null;
   subClusters: IClusters[] | null;
   subSubClusters: IClusters[] | null;
+  filters: IFilters;
   params = new HttpParams()
     .set('order', '')
     .set('direction', '')
@@ -30,15 +33,23 @@ export class AssignClustersComponent implements OnInit {
     subCluster: new FormControl<number | null>(null),
     subSubCluster: new FormControl<number | null>(null)
   });
+  private _destroy$: Subject<any>;
 
   constructor(
     private clustersService: ClustersService,
     private alert: AlertService,
+    private sharedService: SharedService,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
   ngOnInit(): void {
+    this._destroy$ = new Subject<any>();
     this.store.dispatch(showLoading());
+    this.sharedService.getFilters
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value: IFilters) => {
+        this.filters = value;
+      });
     this.fetchClusters();
   }
 
@@ -67,7 +78,7 @@ export class AssignClustersComponent implements OnInit {
 
   fetchClusters() {
     this.clustersService
-      .fetchAll(this.params, { cluster: '' })
+      .fetchAll(this.params, this.filters)
       .pipe(take(1))
       .subscribe({
         next: (result) => {
@@ -86,5 +97,11 @@ export class AssignClustersComponent implements OnInit {
           );
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(null);
+    this._destroy$.complete();
+    this._destroy$.unsubscribe();
   }
 }

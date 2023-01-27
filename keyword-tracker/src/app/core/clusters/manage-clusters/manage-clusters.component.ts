@@ -1,16 +1,16 @@
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   OnInit,
-  ViewChild
+  ViewChild,
+  OnDestroy
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { Store } from '@ngrx/store';
 import * as moment from 'moment';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { hideLoading, showLoading } from 'src/app/store/actions';
 import { HttpParams } from '@angular/common/http';
@@ -25,6 +25,9 @@ import {
   trigger
 } from '@angular/animations';
 import { IClusters } from 'src/app/interfaces/IClusters.interface';
+import { Router } from '@angular/router';
+import { IFilters } from 'src/app/interfaces/IFilters.interface';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-manage-clusters',
@@ -41,10 +44,13 @@ import { IClusters } from 'src/app/interfaces/IClusters.interface';
     ])
   ]
 })
-export class ManageClustersComponent implements OnInit, AfterViewInit {
+export class ManageClustersComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   queryColumns: string[] = [
     'name',
     'subclusters',
+    'parent',
     'esv',
     'queries',
     'avgPosition',
@@ -54,9 +60,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   ];
   dataSource: MatTableDataSource<IClusters>;
   clusters: IClusters[];
-  filters = {
-    cluster: ''
-  };
+  filters: IFilters;
   totalImpressions: string;
   totalClicks: string;
   avgCtr: number;
@@ -71,6 +75,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   endDate = moment().format('YYYY-MM-DD');
   startDate = moment(this.endDate).subtract(3, 'months').format('YYYY-MM-DD');
   expandedElement: IClusters | null;
+  private _destroy$: Subject<any>;
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<any>;
@@ -79,18 +84,24 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   constructor(
     private dialog: MatDialog,
     private alert: AlertService,
+    private sharedService: SharedService,
+    private router: Router,
     private clustersService: ClustersService,
-    private cd: ChangeDetectorRef,
     private store: Store<{ showLoading: boolean }>
   ) {}
 
   ngOnInit(): void {
     this.store.dispatch(showLoading());
-    this.fetchClusters();
+    this._destroy$ = new Subject<any>();
+    this.sharedService.getFilters
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value: IFilters) => {
+        this.filters = value;
+        this.fetchClusters();
+      });
   }
 
   ngAfterViewInit(): void {
-    this.cd.detectChanges();
     this.sort.sortChange.subscribe(() => {
       this.store.dispatch(showLoading());
       this.params = this.params.set('order', this.sort.active);
@@ -100,11 +111,7 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   }
 
   onQueriesClicked(item: IClusters) {
-    console.log(item);
-  }
-
-  expand(item: IClusters) {
-    console.log(item);
+    this.router.navigateByUrl(`/clusters/${item.id}/queries`);
   }
 
   calculate(clusters: IClusters[]) {
@@ -116,18 +123,15 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
       let tempCtr = 0;
       let tempEsv = 0;
       let countQueriesWithEsv = 0;
-      let tempQueryCount = 0;
 
       if (cluster.queries.length > 0) {
-        totalQueries += cluster.queries.length;
         cluster.queries.forEach((query) => {
-          console.log(2);
+          totalQueries++;
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           query.est_search_volume !== null
             ? ((tempEsv += query.est_search_volume), countQueriesWithEsv++)
             : null;
           query.queries.forEach((queryData) => {
-            tempQueryCount++;
             totalImpressions += queryData.impressions;
             totalClicks += queryData.clicks;
             tempPosition += queryData.position;
@@ -137,10 +141,9 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
       }
       if (cluster.children.length > 0) {
         cluster.children.forEach((child) => {
-          console.log(child.name + ':queries = ' + child.queries.length);
           if (child.queries.length > 0) {
-            totalQueries += child.queries.length;
             child.queries.forEach((query) => {
+              totalQueries++;
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               query.est_search_volume !== null
                 ? ((tempEsv += query.est_search_volume), countQueriesWithEsv++)
@@ -156,8 +159,8 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
           if (child.children.length > 0) {
             child.children.forEach((subChild) => {
               if (subChild.queries.length > 0) {
-                totalQueries += subChild.queries.length;
                 subChild.queries.forEach((query) => {
+                  totalQueries++;
                   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                   query.est_search_volume !== null
                     ? ((tempEsv += query.est_search_volume),
@@ -191,13 +194,13 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
   }
 
   fetchClusters() {
+    this.store.dispatch(showLoading());
     this.clustersService
       .fetchAll(this.params, this.filters)
-      .pipe(take(1))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (result: IClusters[]) => {
           this.clusters = this.calculate(result);
-          console.log(this.clusters);
           this.dataSource = new MatTableDataSource(this.clusters);
           this.dataSource.sort = this.sort;
           this.length = result.length;
@@ -261,5 +264,11 @@ export class ManageClustersComponent implements OnInit, AfterViewInit {
           });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(null);
+    this._destroy$.complete();
+    this._destroy$.unsubscribe();
   }
 }

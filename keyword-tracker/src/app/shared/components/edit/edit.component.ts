@@ -1,13 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { take } from 'rxjs';
 import { IFilters } from 'src/app/interfaces/IFilters.interface';
-import { IPage } from 'src/app/interfaces/IPages.interfaces';
-import { IQuery } from 'src/app/interfaces/IQueries.interfaces';
 import { QueryService } from 'src/app/services/query.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { PageService } from 'src/app/services/page.service';
 import { environment } from 'src/environments/environment';
 import { AlertService } from 'src/app/services/alert.service';
 import { Router } from '@angular/router';

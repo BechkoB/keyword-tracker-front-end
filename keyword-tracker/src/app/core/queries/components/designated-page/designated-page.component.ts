@@ -1,7 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { Store } from '@ngrx/store';
 import { Subject, take, takeUntil } from 'rxjs';
@@ -121,8 +120,8 @@ export class DesignatedPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  details(row: any) {
-    this.router.navigateByUrl(`queries/details/${row.id}`);
+  details(row: any, to: string) {
+    this.router.navigateByUrl(`${to}/details/${row.id}`);
   }
 
   isAllSelected() {

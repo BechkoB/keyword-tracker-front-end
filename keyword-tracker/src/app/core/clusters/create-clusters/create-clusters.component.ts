@@ -25,6 +25,7 @@ export class CreateClustersComponent implements OnInit {
     parent: new FormControl<number | null>(null),
     subCluster: new FormControl<number | null>(null)
   });
+
   constructor(@Inject(MAT_DIALOG_DATA) private data: any) {}
 
   ngOnInit(): void {

@@ -2,7 +2,6 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IFilters } from '../interfaces/IFilters.interface';
-import { IPage } from '../interfaces/IPages.interfaces';
 import { IQuery } from '../interfaces/IQueries.interfaces';
 import { HttpService } from './http.service';
 
@@ -12,10 +11,14 @@ import { HttpService } from './http.service';
 export class ClustersService {
   constructor(private httpService: HttpService) {}
 
-  fetchAll(params: HttpParams, filters: { cluster: null | string }) {
+  fetchAll(params: HttpParams, filters: IFilters) {
     return this.httpService.post('clusters/all?' + params, {
       filters
     });
+  }
+
+  getById(id: number) {
+    return this.httpService.get(`clusters/${id}`);
   }
 
   create(body: any) {

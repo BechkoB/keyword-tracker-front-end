@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -22,7 +28,7 @@ import * as moment from 'moment';
   templateUrl: './page-details.component.html',
   styleUrls: ['./page-details.component.scss']
 })
-export class PageDetailsComponent implements OnInit, AfterViewInit {
+export class PageDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -149,5 +155,11 @@ export class PageDetailsComponent implements OnInit, AfterViewInit {
 
   details(row: any) {
     this.router.navigateByUrl(`queries/details/${row.query_id}`);
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(null);
+    this._destroy$.complete();
+    this._destroy$.unsubscribe();
   }
 }

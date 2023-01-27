@@ -131,10 +131,12 @@ mat-expansion-panel-body {
   overflow: hidden !important;
 }
 
-.mat-row:hover .mat-cell {
-  cursor: pointer;
-  border-bottom: 1px solid black;
-  border-top: 1px solid black;
+.main-table {
+  .mat-row:hover .mat-cell {
+    cursor: pointer;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+  }
 }
 
 .mat-table tr:last-child td {

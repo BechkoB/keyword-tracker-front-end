@@ -97,12 +97,15 @@ export class NewQueriesComponent implements OnInit, AfterViewInit, OnDestroy {
       autoFocus: false,
       data: 'queries'
     });
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     result.query = '';
-    //     this.sharedService.filtersSubject.next(result);
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        result.query = '';
+        this.hasFilters = true;
+        this.sharedService.setHasFilters = true;
+        this.sharedService.filtersSubject.next(result);
+        this.paginator.firstPage();
+      }
+    });
   }
 
   fetchData() {

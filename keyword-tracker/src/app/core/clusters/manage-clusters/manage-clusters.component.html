@@ -1,4 +1,7 @@
-<h1 class="text-3xl font-bold ml-4 mt-8">Manage Clusters</h1>
+<div class="flex justify-between w-full">
+  <h1 class="text-3xl font-bold ml-4 mt-8">Manage Clusters</h1>
+  <app-date class="mt-8 mx-2 w-80"></app-date>
+</div>
 <div class="divider"></div>
 
 <mat-card class="tabs-wrapper">
@@ -16,7 +19,8 @@
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Clusters</th>
             <td mat-cell *matCellDef="let row">
-              <span *ngIf="row.children && row.children.length > 0">
+              {{ row.name }}
+              <!-- <span *ngIf="row.children && row.children.length > 0">
                 <app-menu-item
                   #menu
                   [items]="row.children"
@@ -31,7 +35,7 @@
               </span>
               <span *ngIf="row.children.length === 0">
                 {{ row.name }}
-              </span>
+              </span> -->
             </td>
           </ng-container>
 
@@ -73,6 +77,13 @@
           </ng-container>
 
           <ng-container matColumnDef="subclusters">
+            <th mat-header-cell *matHeaderCellDef>Parent</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.parent ? row.parent.name : '' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="parent">
             <th mat-header-cell *matHeaderCellDef>Subclusters</th>
             <td mat-cell *matCellDef="let row">
               {{ row.children ? row.children.length : '' }}
@@ -84,23 +95,28 @@
             <td
               mat-cell
               *matCellDef="let row"
-              (click)="onQueriesClicked(row)"
-              class="underline"
+              matTooltip="See queries"
+              matTooltipPosition="left"
+              (click)="row.queriesCount !== 0 ? onQueriesClicked(row) : null"
+              class="underline cursor-pointer"
             >
-              <!-- {{ row?.queries.length > 0 ? row?.queries.length : '' }} -->
-              <span *ngIf="row.queries && row.queries.length > 0">
+              {{ row.queriesCount }}
+              <!-- <span *ngIf="row.queries && row.queries.length > 0">
                 <app-menu-item
                   #menu
                   [items]="row.queries"
                   [from]="'queries'"
                 ></app-menu-item>
-                <button class="w-full text-left" [matMenuTriggerFor]="menu.childMenu">
+                <button
+                  class="w-full text-left"
+                  [matMenuTriggerFor]="menu.childMenu"
+                >
                   {{ row.queriesCount }}
                 </button>
               </span>
               <span *ngIf="row.queries.length === 0">
                 {{ 0 }}
-              </span>
+              </span> -->
             </td>
           </ng-container>
 
